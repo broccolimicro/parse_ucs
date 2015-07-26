@@ -1,0 +1,173 @@
+template(int P, M, N)
+{
+	module dPxMofN : int
+	{
+		node[N][P] b;
+		
+		for i in range(0,P)
+		{
+			assert(Mof(M, b[i]));
+		}
+	}
+
+	void operator:=(dPxMofN(P, M, N) left, right)
+	{
+		chp
+		{
+			(|| i:range(0,P):
+			 [[] j:range(0,N): right.b[i][j] -> left[i][j]+ ]
+			)
+		}
+	}
+
+	_dPxMofN(P, M, N) operator~(dPxMofN(P, M, N) right)
+	{
+		for i in range(0,P)
+		{
+			for j in range(0,N)
+			{
+				return.b[i][j] = ~right.b[i][j];
+			}
+		}
+	}
+
+	void operator=(node left, dPxMofN(P, M, N) right)
+	{
+		left = (& i:range(0,P):
+				(| j:NchooseK(N, M):
+				 (& k:NchooseK_i(N, M, j):
+				  right.b[i][k]
+				 )
+				)
+			   );
+	}
+
+	void operator-(dPxMofN(P, M, N) value)
+	{
+		chp
+		{
+			(, i:range(0,P):
+			 (, j:range(0,N):
+			  b[i][j]-
+			 )
+			)
+		}
+	}
+}
+
+template(int P, M, N)
+{
+	module _dPxMofN : int
+	{
+		node[N][P] b;
+		
+		for i in range(0,P)
+		{
+			assert(_Mof(M, b[i]));
+		}
+	}
+	
+	void operator:=(_dPxMofN(P, M, N) left, right)
+	{
+		chp
+		{
+			(|| i:range(0,P):
+			 [[] j:range(0,N): ~right.b[i][j] -> left.b[i][j]-]
+			)
+		}
+	}
+
+	dPxMofN(P, M, N) operator~(_dPxMofN(P, M, N) right)
+	{
+		for i in range(0,P)
+		{
+			for j in range(0,N)
+			{
+				return.b[i][j] = ~right.b[i][j];
+			}
+		}
+	}
+
+	void operator=(node left, _dPxMofN(P, M, N) right)
+	{
+		left = (& i:range(0,P):
+				  (& j:range(0,N):
+				   right.b[i][k]
+				  )
+				 );
+	}
+
+	void operator+(_dPxMofN(P, M, N) value)
+	{
+		chp
+		{
+			(, i:range(0,P):
+			 (, j:range(0,N):
+			  b[i][j]+
+			 )
+			)
+		}
+	}
+}
+
+alias dMofN(int M, N) = dPxMofN(1, M, N)
+{
+	node[N] b = super::b[0];
+}
+
+alias d1of4 = dMofN(1, 4)
+{
+	node ff = b[0];
+	node ft = b[1];
+	node tf = b[2];
+	node tt = b[3];
+}
+
+alias d1of3 = dMofN(1, 3)
+{
+	node f = b[0];
+	node t = b[1];
+	node c = b[2];
+}
+
+alias d1of2 = dMofN(1, 2)
+{
+	node f = b[0];
+	node t = b[1];
+}
+
+alias d1of1 = dMofN(1, 1)
+{
+	node b = super::b[0];
+}
+
+alias _dMofN(int M, N) = _dPxMofN(1, M, N)
+{
+	node[N] b = super::b[0];
+}
+
+alias _d1of4 = _dMofN(1, 4)
+{
+	node ff = b[0];
+	node ft = b[1];
+	node tf = b[2];
+	node tt = b[3];
+}
+
+alias _d1of3 = _dMofN(1, 3)
+{
+	node f = b[0];
+	node t = b[1];
+	node c = b[2];
+}
+
+alias _d1of2 = _dMofN(1, 2)
+{
+	node f = b[0];
+	node t = b[1];
+}
+
+alias _d1of1 = _dMofN(1, 1)
+{
+	node b = super::b[0];
+}

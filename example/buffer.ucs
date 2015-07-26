@@ -1,0 +1,93 @@
+from data import *;
+from channel import *;
+
+module buffer 
+{
+	channel L, R;
+	int v;
+	
+	chp
+	{
+		*[L?v; R!v]
+	}
+}
+
+module pcfb(int P, M, N) : buffer
+{
+	ePxMofN(P, M, N) L : super::L, R : super::R;
+	dPxMofN(P, M, N) v : super::v;
+
+	hse
+	{
+	  *[ [R.e]; R.r := L.r; L.e-
+		 (
+		   [~R.e]; R.r- ||
+		   [~L.r]; L.e+
+		 )
+	   ]
+	}
+}
+
+module : buffer::pcfb
+{
+	node en, Rv, _Le;
+	int _R;
+	
+	prs
+	{
+		en & R.e -> _R := ~L.r
+        en & Rv -> L.e-
+		
+        pReset | _Le -> en-
+		
+        ~_pReset | ~en & ~R.e -> _R+
+        ~_pReset | ~en & ~L.r -> L.e+
+		
+        ~sReset & ~Rv & ~_Le -> en+
+        
+        ~_R => R
+		~_R => Rv
+		~L.e => _Le
+	}
+}
+
+module e1of2 : buffer
+{
+	e1of2 L : super::L, R : super::R;
+	d1of2 v : super::v;
+}
+
+module fifo(int length)
+{
+	channel left, right;
+	buffer[length] stages;
+	
+	left  = stages[0].left;
+	right = stages[$].right;
+	
+	(i:range(0, length-1):
+	  stages[i].right = stages[i+1].left;
+	)
+}
+
+module e1of2 : fifo(int length)
+{
+	e1of2 left : super::left, right : super::right;
+	buffer::e1of2 stages : super::stages;
+}
+
+module pcfb : fifo(int length)
+{	
+	buffer::pcfb stages : super::stages;
+}
+
+module fifo_test
+{
+	fifo(5)::{e1of2,pcfb} q;
+	
+	chp
+	{
+		*[q.left!rand(range(0,1))] ||
+		*[print(q.right?)]
+	}
+}

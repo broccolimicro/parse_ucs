@@ -1,0 +1,85 @@
+module active  : channel;
+module passive : channel;
+
+operator!?(active chan, int send, int recv)
+{
+	chp
+	{
+		[~chan.a]; chan.r := send; recv := chan.a; chan.r-
+	}
+}
+
+operator?!(active chan, int recv, int send)
+{
+	chp
+	{
+		recv := chan.r; chan.a := send; [~chan.r]; chan.a-
+	}
+}
+
+operator!?(passive chan, int send, int recv)
+{
+	chp
+	{
+		recv := chan.a; chan.r := send; [~chan.a]; chan.r-
+	}
+}
+
+operator?!(passive chan, int recv, int send)
+{
+	chp
+	{
+		[~chan.r]; chan.a := send; recv := chan.r; chan.a-
+	}
+}
+
+template(int Pa, Ma, Na, Pr, Mr, Nr)
+{
+	module aPxMofNPxMofN : channel
+	{
+		PxMofN(Pr, Mr, Nr) r : super::r;
+		PxMofN(Pa, Ma, Na) a : super::a;
+	}
+
+	module ePxMofNPxMofN : channel
+	{
+		PxMofN(Pr, Mr, Nr)  r : super::r;
+		_PxMofN(Pa, Ma, Na) e : super::a;
+	}
+	
+	void operator=(aPxMofNPxMofN(Pa, Ma, Na, Pr, Mr, Nr) left, ePxMofNPxMofN(Pa, Ma, Na, Pr, Mr, Nr) right)
+	{
+		left.r = right.r;
+		left.a = ~right.e;
+	}
+	
+	void operator=(ePxMofNPxMofN(Pa, Ma, Na, Pr, Mr, Nr) left, ePxMofNPxMofN(Pa, Ma, Na, Pr, Mr, Nr) right)
+	{
+		left.r = right.r;
+		left.e = ~right.a;
+	}
+}
+
+alias ePxMofN(int P, M, N) = {ePxMofNPxMofN(1, 1, 1, P, M, N),active}
+{
+	node e = super::e.b[0][0];
+}
+
+alias eMofN(int M, N) = ePxMofN(1, M, N)
+alias e1ofN(int N) = eMofN(1, N);
+alias e1of1 = e1ofN(1);
+alias e1of2 = e1ofN(2);
+alias e1of3 = e1ofN(3);
+alias e1of4 = e1ofN(4);
+
+alias aPxMofN(int P, M, N) = {aPxMofNPxMofN(1, 1, 1, P, M, N),active}
+{
+	node a = super::a.b[0][0];
+}
+	
+alias aMofN(int M, N) = aPxMofN(1, M, N);
+alias a1ofN(int N) = aMofN(1, N);
+alias a1of1 = a1ofN(1);
+alias a1of2 = a1ofN(2);
+alias a1of3 = a1ofN(3);
+alias a1of4 = a1ofN(4);
