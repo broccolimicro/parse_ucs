@@ -9,6 +9,7 @@
 #include <parse/default/instance.h>
 #include <parse/default/symbol.h>
 #include <parse/default/number.h>
+#include <parse/default/white_space.h>
 
 namespace parse_ucs
 {
@@ -107,6 +108,7 @@ void type::register_syntax(tokenizer &tokens)
 	{
 		tokens.register_syntax<type>();
 		tokens.register_token<parse::symbol>();
+		tokens.register_token<parse::white_space>(false);
 		type_name::register_syntax(tokens);
 	}
 }
