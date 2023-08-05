@@ -34,12 +34,12 @@ template(int P, M, N)
 	void operator=(node left, dPxMofN(P, M, N) right)
 	{
 		left = (& i:range(0,P):
-				(| j:NchooseK(N, M):
-				 (& k:NchooseK_i(N, M, j):
+			(| j:NchooseK(N, M):
+				(& k:NchooseK_i(N, M, j):
 				  right.b[i][k]
-				 )
 				)
-			   );
+			)
+		);
 	}
 
 	void operator-(dPxMofN(P, M, N) value)
