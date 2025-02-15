@@ -1,26 +1,21 @@
-/*
- * type_name.h
- *
- *  Created on: Jun 26, 2015
- *      Author: nbingham
- */
+#pragma once
 
 #include <parse/parse.h>
 #include <parse/syntax.h>
-
-#ifndef parse_ucs_type_name_h
-#define parse_ucs_type_name_h
+#include "function.h"
+#include "structure.h"
 
 namespace parse_ucs
 {
 
-struct type_name : parse::syntax
+struct source : parse::syntax
 {
-	type_name();
-	type_name(tokenizer &tokens, void *data = NULL);
-	~type_name();
+	source();
+	source(tokenizer &tokens, void *data = NULL);
+	~source();
 
-	string name;
+	vector<structure> types;
+	vector<function> funcs;
 
 	void parse(tokenizer &tokens, void *data = NULL);
 	static bool is_next(tokenizer &tokens, int i = 1, void *data = NULL);
@@ -31,5 +26,3 @@ struct type_name : parse::syntax
 };
 
 }
-
-#endif

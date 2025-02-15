@@ -1,11 +1,4 @@
-/*
- * module.cpp
- *
- *  Created on: Jan 18, 2015
- *      Author: nbingham
- */
-
-#include "module.h"
+#include "structure.h"
 #include <parse/default/instance.h>
 #include <parse/default/symbol.h>
 #include <parse/default/number.h>
@@ -14,28 +7,32 @@
 
 namespace parse_ucs
 {
-module::module()
+structure::structure()
 {
-	debug_name = "module";
+	debug_name = "structure";
 }
 
-module::module(tokenizer &tokens, void *data)
+structure::structure(tokenizer &tokens, void *data)
 {
-	debug_name = "module";
+	debug_name = "structure";
 	parse(tokens, data);
 }
 
-module::~module()
+structure::~structure()
 {
 
 }
 
-void module::parse(tokenizer &tokens, void *data)
+void structure::parse(tokenizer &tokens, void *data)
 {
 	tokens.syntax_start(this);
 
 	tokens.increment(true);
 	tokens.expect("}");
+
+	tokens.increment(false);
+	tokens.expect<parse::new_line>();
+	tokens.expect<declaration>();
 
 	tokens.increment(true);
 	tokens.expect("{");
@@ -44,7 +41,7 @@ void module::parse(tokenizer &tokens, void *data)
 	tokens.expect<parse::instance>();
 
 	tokens.increment(true);
-	tokens.expect("module");
+	tokens.expect("struct");
 
 	if (tokens.decrement(__FILE__, __LINE__, data))
 		tokens.next();
@@ -55,15 +52,17 @@ void module::parse(tokenizer &tokens, void *data)
 	if (tokens.decrement(__FILE__, __LINE__, data))
 		tokens.next();
 
-	tokens.increment(false);
-	tokens.expect<behavior>();
-
 	while (tokens.decrement(__FILE__, __LINE__, data))
 	{
-		behaviors.push_back(behavior(tokens, data));
+		if (tokens.found<parse::new_line>()) {
+			tokens.next();
+		} else {
+			members.push_back(declaration(tokens, data));
+		}
 
 		tokens.increment(false);
-		tokens.expect<behavior>();
+		tokens.expect<declaration>();
+		tokens.expect<parse::new_line>();
 	}
 
 	if (tokens.decrement(__FILE__, __LINE__, data))
@@ -72,43 +71,43 @@ void module::parse(tokenizer &tokens, void *data)
 	tokens.syntax_end(this);
 }
 
-bool module::is_next(tokenizer &tokens, int i, void *data)
+bool structure::is_next(tokenizer &tokens, int i, void *data)
 {
-	return tokens.is_next("module", i);
+	return tokens.is_next("struct", i);
 }
 
-void module::register_syntax(tokenizer &tokens)
+void structure::register_syntax(tokenizer &tokens)
 {
-	if (!tokens.syntax_registered<module>())
+	if (!tokens.syntax_registered<structure>())
 	{
-		tokens.register_syntax<module>();
+		tokens.register_syntax<structure>();
 		tokens.register_token<parse::symbol>();
 		tokens.register_token<parse::instance>();
 		tokens.register_token<parse::white_space>(false);
-		tokens.register_token<parse::new_line>(false);
-		behavior::register_syntax(tokens);
+		tokens.register_token<parse::new_line>(true);
+		declaration::register_syntax(tokens);
 	}
 }
 
-string module::to_string(string tab) const
+string structure::to_string(string tab) const
 {
-	string result = "module";
+	string result = "struct";
 
 	if (name != "")
 		result += " " + name;
 
 	result += "\n" + tab + "{\n";
 
-	for (int i = 0; i < (int)behaviors.size(); i++)
-		result += tab + "\t" + behaviors[i].to_string(tab + "\t") + "\n";
+	for (int i = 0; i < (int)members.size(); i++)
+		result += tab + "\t" + members[i].to_string(tab + "\t") + "\n";
 
 	result += tab + "}";
 
 	return result;
 }
 
-parse::syntax *module::clone() const
+parse::syntax *structure::clone() const
 {
-	return new module(*this);
+	return new structure(*this);
 }
 }

@@ -1,27 +1,24 @@
-/*
- * module.h
- *
- *  Created on: Jan 18, 2015
- *      Author: nbingham
- */
+#pragma once
 
 #include <parse/parse.h>
 #include <parse/syntax.h>
-#include "behavior.h"
-
-#ifndef parse_ucs_module_h
-#define parse_ucs_module_h
+#include "declaration.h"
 
 namespace parse_ucs
 {
-struct module : parse::syntax
+
+// This represents **circuit structures**
+// 1. Wires
+// 2. Devices
+// 3. Modules
+struct structure : parse::syntax
 {
-	module();
-	module(tokenizer &tokens, void *data = NULL);
-	~module();
+	structure();
+	structure(tokenizer &tokens, void *data = NULL);
+	~structure();
 
 	string name;
-	vector<behavior> behaviors;
+	vector<declaration> members;
 
 	void parse(tokenizer &tokens, void *data = NULL);
 	static bool is_next(tokenizer &tokens, int i = 1, void *data = NULL);
@@ -30,6 +27,5 @@ struct module : parse::syntax
 	string to_string(string tab = "") const;
 	parse::syntax *clone() const;
 };
-}
 
-#endif
+}
