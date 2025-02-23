@@ -35,6 +35,8 @@ struct function : parse::syntax
 	vector<declaration> args;
 	string ret;
 
+	string impl;
+
 	parse::syntax *body;
 
 	static map<string, language> registry;

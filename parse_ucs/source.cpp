@@ -29,21 +29,21 @@ void source::parse(tokenizer &tokens, void *data)
 
 	tokens.increment(true);
 	tokens.expect<function>();
-	tokens.expect<structure>();
+	tokens.expect<datatype>();
 	tokens.expect<parse::new_line>();
 	while (tokens.decrement(__FILE__, __LINE__))
 	{
 		if (tokens.found<function>()) {
 			funcs.push_back(function(tokens, data));
-		} else if (tokens.found<structure>()) {
-			types.push_back(structure(tokens, data));
+		} else if (tokens.found<datatype>()) {
+			types.push_back(datatype(tokens, data));
 		} else {
 			tokens.next();
 		}
 
 		tokens.increment(false);
 		tokens.expect<function>();
-		tokens.expect<structure>();
+		tokens.expect<datatype>();
 		tokens.expect<parse::new_line>();
 	}
 
@@ -56,7 +56,7 @@ bool source::is_next(tokenizer &tokens, int i, void *data)
 		i++;
 	}
 
-	return structure::is_next(tokens, i, data) or function::is_next(tokens, i, data);
+	return datatype::is_next(tokens, i, data) or function::is_next(tokens, i, data);
 }
 
 void source::register_syntax(tokenizer &tokens)
@@ -67,7 +67,7 @@ void source::register_syntax(tokenizer &tokens)
 		tokens.register_token<parse::white_space>(false);
 		tokens.register_token<parse::new_line>(true);
 		function::register_syntax(tokens);
-		structure::register_syntax(tokens);
+		datatype::register_syntax(tokens);
 	}
 }
 

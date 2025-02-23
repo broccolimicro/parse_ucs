@@ -79,6 +79,9 @@ void function::parse(tokenizer &tokens, void *data)
 	tokens.expect("{");
 
 	tokens.increment(false);
+	tokens.expect(":");
+
+	tokens.increment(false);
 	tokens.expect<parse::instance>();
 
 	tokens.increment(true);
@@ -90,11 +93,11 @@ void function::parse(tokenizer &tokens, void *data)
 	tokens.increment(true);
 	tokens.expect("(");
 
+	tokens.increment(false);
+	tokens.expect("::");
+
 	tokens.increment(true);
 	tokens.expect<parse::instance>();
-
-	tokens.increment(false);
-	tokens.expect("(");
 
 	tokens.increment(true);
 	for (auto i = registry.begin(); i != registry.end(); i++) {
@@ -111,28 +114,23 @@ void function::parse(tokenizer &tokens, void *data)
 		}
 	}
 
+	// name of function
+	if (tokens.decrement(__FILE__, __LINE__, data)) {
+		name = tokens.next();
+	}
+
 	// receiver
 	if (tokens.decrement(__FILE__, __LINE__, data)) {
-		tokens.next();
+		recv = name;
 
-		tokens.increment(true);
-		tokens.expect(")");
+		tokens.next();
 
 		tokens.increment(true);
 		tokens.expect<parse::instance>();
 
 		if (tokens.decrement(__FILE__, __LINE__, data)) {
-			recv = tokens.next();
+			name = tokens.next();
 		}
-
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
-			tokens.next();
-		}
-	}
-
-	// name of function
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
-		name = tokens.next();
 	}
 
 	// "("
@@ -170,6 +168,18 @@ void function::parse(tokenizer &tokens, void *data)
 	// return type
 	if (tokens.decrement(__FILE__, __LINE__, data)) {
 		ret = tokens.next();
+	}
+
+	// ":"
+	if (tokens.decrement(__FILE__, __LINE__, data)) {
+		tokens.next();
+
+		tokens.increment(true);
+		tokens.expect<parse::instance>();
+
+		if (tokens.decrement(__FILE__, __LINE__, data)) {
+			impl = tokens.next();
+		}
 	}
 
 	// "{"
@@ -227,16 +237,16 @@ void function::register_syntax(tokenizer &tokens)
 	}
 }
 
-string function::to_string(string tab) const
-{
+string function::to_string(string tab) const {
 	string result = lang;
 
-	if (recv != "") {
-		result += " (" + recv + ")";
+	if (name != "") {
+		result += " ";
+		if (recv != "") {
+			result += recv + "::";
+		}
+		result += name;
 	}
-
-	if (name != "")
-		result += " " + name;
 
 	result += "(";
 	for (auto i = args.begin(); i != args.end(); i++) {
@@ -250,6 +260,10 @@ string function::to_string(string tab) const
 
 	if (ret != "") {
 		result += " " + ret;
+	}
+
+	if (impl != "") {
+		result += " : " + impl;
 	}
 
 	result += " {\n";

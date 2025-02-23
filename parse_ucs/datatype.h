@@ -3,22 +3,20 @@
 #include <parse/parse.h>
 #include <parse/syntax.h>
 #include "declaration.h"
+#include "prototype.h"
 
 namespace parse_ucs
 {
 
-// This represents **circuit structures**
-// 1. Wires
-// 2. Devices
-// 3. Modules
-struct structure : parse::syntax
+struct datatype : parse::syntax
 {
-	structure();
-	structure(tokenizer &tokens, void *data = NULL);
-	~structure();
+	datatype();
+	datatype(tokenizer &tokens, void *data = NULL);
+	~datatype();
 
 	string name;
 	vector<declaration> members;
+	vector<prototype> protocols;
 
 	void parse(tokenizer &tokens, void *data = NULL);
 	static bool is_next(tokenizer &tokens, int i = 1, void *data = NULL);

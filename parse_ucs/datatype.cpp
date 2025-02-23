@@ -1,4 +1,4 @@
-#include "structure.h"
+#include "datatype.h"
 #include <parse/default/instance.h>
 #include <parse/default/symbol.h>
 #include <parse/default/number.h>
@@ -7,23 +7,23 @@
 
 namespace parse_ucs
 {
-structure::structure()
+datatype::datatype()
 {
-	debug_name = "structure";
+	debug_name = "datatype";
 }
 
-structure::structure(tokenizer &tokens, void *data)
+datatype::datatype(tokenizer &tokens, void *data)
 {
-	debug_name = "structure";
+	debug_name = "datatype";
 	parse(tokens, data);
 }
 
-structure::~structure()
+datatype::~datatype()
 {
 
 }
 
-void structure::parse(tokenizer &tokens, void *data)
+void datatype::parse(tokenizer &tokens, void *data)
 {
 	tokens.syntax_start(this);
 
@@ -33,6 +33,7 @@ void structure::parse(tokenizer &tokens, void *data)
 	tokens.increment(false);
 	tokens.expect<parse::new_line>();
 	tokens.expect<declaration>();
+	tokens.expect<prototype>();
 
 	tokens.increment(true);
 	tokens.expect("{");
@@ -41,7 +42,7 @@ void structure::parse(tokenizer &tokens, void *data)
 	tokens.expect<parse::instance>();
 
 	tokens.increment(true);
-	tokens.expect("struct");
+	tokens.expect("type");
 
 	if (tokens.decrement(__FILE__, __LINE__, data))
 		tokens.next();
@@ -56,12 +57,15 @@ void structure::parse(tokenizer &tokens, void *data)
 	{
 		if (tokens.found<parse::new_line>()) {
 			tokens.next();
+		} else if (tokens.found<prototype>()) {
+			protocols.push_back(prototype(tokens, data));
 		} else {
 			members.push_back(declaration(tokens, data));
 		}
 
 		tokens.increment(false);
 		tokens.expect<declaration>();
+		tokens.expect<prototype>();
 		tokens.expect<parse::new_line>();
 	}
 
@@ -71,43 +75,49 @@ void structure::parse(tokenizer &tokens, void *data)
 	tokens.syntax_end(this);
 }
 
-bool structure::is_next(tokenizer &tokens, int i, void *data)
+bool datatype::is_next(tokenizer &tokens, int i, void *data)
 {
-	return tokens.is_next("struct", i);
+	return tokens.is_next("type", i);
 }
 
-void structure::register_syntax(tokenizer &tokens)
+void datatype::register_syntax(tokenizer &tokens)
 {
-	if (!tokens.syntax_registered<structure>())
+	if (!tokens.syntax_registered<datatype>())
 	{
-		tokens.register_syntax<structure>();
+		tokens.register_syntax<datatype>();
 		tokens.register_token<parse::symbol>();
 		tokens.register_token<parse::instance>();
 		tokens.register_token<parse::white_space>(false);
 		tokens.register_token<parse::new_line>(true);
 		declaration::register_syntax(tokens);
+		prototype::register_syntax(tokens);
 	}
 }
 
-string structure::to_string(string tab) const
+string datatype::to_string(string tab) const
 {
-	string result = "struct";
+	string result = "type";
 
 	if (name != "")
 		result += " " + name;
 
 	result += "\n" + tab + "{\n";
 
-	for (int i = 0; i < (int)members.size(); i++)
+	for (int i = 0; i < (int)members.size(); i++) {
 		result += tab + "\t" + members[i].to_string(tab + "\t") + "\n";
+	}
+
+	for (int i = 0; i < (int)protocols.size(); i++) {
+		result += tab + "\t" + protocols[i].to_string(tab + "\t") + "\n";
+	}
 
 	result += tab + "}";
 
 	return result;
 }
 
-parse::syntax *structure::clone() const
+parse::syntax *datatype::clone() const
 {
-	return new structure(*this);
+	return new datatype(*this);
 }
 }

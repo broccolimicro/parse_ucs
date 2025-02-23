@@ -3,7 +3,7 @@
 #include <parse/parse.h>
 #include <parse/syntax.h>
 #include "function.h"
-#include "structure.h"
+#include "datatype.h"
 
 namespace parse_ucs
 {
@@ -14,7 +14,7 @@ struct source : parse::syntax
 	source(tokenizer &tokens, void *data = NULL);
 	~source();
 
-	vector<structure> types;
+	vector<datatype> types;
 	vector<function> funcs;
 
 	void parse(tokenizer &tokens, void *data = NULL);

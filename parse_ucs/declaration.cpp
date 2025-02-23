@@ -28,7 +28,7 @@ void declaration::parse(tokenizer &tokens, void *data) {
 
 	tokens.increment(false);
 	tokens.expect(",");
-	
+
 	tokens.increment(true);
 	tokens.expect<parse::instance>();
 
@@ -47,7 +47,7 @@ void declaration::parse(tokenizer &tokens, void *data) {
 
 	while (tokens.decrement(__FILE__, __LINE__, data)) {
 		tokens.next();
-	
+
 		tokens.increment(false);
 		tokens.expect(",");
 
@@ -96,7 +96,7 @@ void declaration::parse(tokenizer &tokens, void *data) {
 }
 
 bool declaration::is_next(tokenizer &tokens, int i, void *data) {
-	return tokens.is_next<parse::instance>() and not tokens.is_next("func") and not tokens.is_next("struct");
+	return tokens.is_next<parse::instance>(i) and not tokens.is_next("(", i+1) and not tokens.is_next("func", i) and not tokens.is_next("struct", i);
 }
 
 void declaration::register_syntax(tokenizer &tokens) {
