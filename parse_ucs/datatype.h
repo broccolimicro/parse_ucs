@@ -13,7 +13,8 @@ struct datatype : parse::syntax
 	datatype();
 	datatype(tokenizer &tokens, void *data = NULL);
 	~datatype();
-
+	
+	bool isInterface;
 	string name;
 	vector<declaration> members;
 	vector<prototype> protocols;

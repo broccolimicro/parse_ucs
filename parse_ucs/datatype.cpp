@@ -10,11 +10,13 @@ namespace parse_ucs
 datatype::datatype()
 {
 	debug_name = "datatype";
+	isInterface = false;
 }
 
 datatype::datatype(tokenizer &tokens, void *data)
 {
 	debug_name = "datatype";
+	isInterface = false;
 	parse(tokens, data);
 }
 
@@ -30,11 +32,6 @@ void datatype::parse(tokenizer &tokens, void *data)
 	tokens.increment(true);
 	tokens.expect("}");
 
-	tokens.increment(false);
-	tokens.expect<parse::new_line>();
-	tokens.expect<declaration>();
-	tokens.expect<prototype>();
-
 	tokens.increment(true);
 	tokens.expect("{");
 
@@ -43,15 +40,23 @@ void datatype::parse(tokenizer &tokens, void *data)
 
 	tokens.increment(true);
 	tokens.expect("type");
+	tokens.expect("interface");
 
 	if (tokens.decrement(__FILE__, __LINE__, data))
-		tokens.next();
+		isInterface = (tokens.next() == "interface");
 
 	if (tokens.decrement(__FILE__, __LINE__, data))
 		name = tokens.next();
 
 	if (tokens.decrement(__FILE__, __LINE__, data))
 		tokens.next();
+
+	tokens.increment(false);
+	tokens.expect<parse::new_line>();
+	if (not isInterface) {
+		tokens.expect<declaration>();
+	}
+	tokens.expect<prototype>();
 
 	while (tokens.decrement(__FILE__, __LINE__, data))
 	{
@@ -64,7 +69,9 @@ void datatype::parse(tokenizer &tokens, void *data)
 		}
 
 		tokens.increment(false);
-		tokens.expect<declaration>();
+		if (not isInterface) {
+			tokens.expect<declaration>();
+		}
 		tokens.expect<prototype>();
 		tokens.expect<parse::new_line>();
 	}
@@ -77,7 +84,7 @@ void datatype::parse(tokenizer &tokens, void *data)
 
 bool datatype::is_next(tokenizer &tokens, int i, void *data)
 {
-	return tokens.is_next("type", i);
+	return tokens.is_next("type", i) or tokens.is_next("interface", i);
 }
 
 void datatype::register_syntax(tokenizer &tokens)
@@ -96,12 +103,12 @@ void datatype::register_syntax(tokenizer &tokens)
 
 string datatype::to_string(string tab) const
 {
-	string result = "type";
+	string result = (isInterface ? "interface" : "type");
 
 	if (name != "")
 		result += " " + name;
 
-	result += "\n" + tab + "{\n";
+	result += " {\n";
 
 	for (int i = 0; i < (int)members.size(); i++) {
 		result += tab + "\t" + members[i].to_string(tab + "\t") + "\n";

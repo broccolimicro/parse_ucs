@@ -7,6 +7,17 @@
 
 namespace parse_ucs {
 
+struct variable {
+	variable();
+	variable(string name);
+	~variable();
+
+	string name;
+	vector<parse_expression::expression> size;
+
+	string to_string(string tab = "") const;
+};
+
 struct declaration : parse::syntax
 {
 	declaration();
@@ -14,7 +25,7 @@ struct declaration : parse::syntax
 	~declaration();
 
 	string type;
-	vector<string> name;
+	vector<variable> name;
 	vector<parse_expression::expression> reset;
 
 	void parse(tokenizer &tokens, void *data = NULL);

@@ -2,6 +2,7 @@
 
 #include <parse/parse.h>
 #include <parse/syntax.h>
+#include "include.h"
 #include "function.h"
 #include "datatype.h"
 
@@ -14,6 +15,7 @@ struct source : parse::syntax
 	source(tokenizer &tokens, void *data = NULL);
 	~source();
 
+	vector<include> incl;
 	vector<datatype> types;
 	vector<function> funcs;
 

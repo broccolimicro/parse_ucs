@@ -7,6 +7,7 @@
 
 namespace parse_ucs
 {
+
 source::source()
 {
 	debug_name = "source";
@@ -27,12 +28,26 @@ void source::parse(tokenizer &tokens, void *data)
 {
 	tokens.syntax_start(this);
 
+	tokens.increment(false);
+	tokens.expect<include>();
+	tokens.expect<parse::new_line>();
+	while (tokens.decrement(__FILE__, __LINE__)) {
+		if (tokens.found<include>()) {
+			incl.push_back(include(tokens, data));
+		} else {
+			tokens.next();
+		}
+
+		tokens.increment(false);
+		tokens.expect<include>();
+		tokens.expect<parse::new_line>();
+	}
+
 	tokens.increment(true);
 	tokens.expect<function>();
 	tokens.expect<datatype>();
 	tokens.expect<parse::new_line>();
-	while (tokens.decrement(__FILE__, __LINE__))
-	{
+	while (tokens.decrement(__FILE__, __LINE__)) {
 		if (tokens.found<function>()) {
 			funcs.push_back(function(tokens, data));
 		} else if (tokens.found<datatype>()) {
@@ -56,7 +71,7 @@ bool source::is_next(tokenizer &tokens, int i, void *data)
 		i++;
 	}
 
-	return datatype::is_next(tokens, i, data) or function::is_next(tokens, i, data);
+	return include::is_next(tokens, i, data) or datatype::is_next(tokens, i, data) or function::is_next(tokens, i, data);
 }
 
 void source::register_syntax(tokenizer &tokens)
@@ -68,12 +83,17 @@ void source::register_syntax(tokenizer &tokens)
 		tokens.register_token<parse::new_line>(true);
 		function::register_syntax(tokens);
 		datatype::register_syntax(tokens);
+		include::register_syntax(tokens);
 	}
 }
 
 string source::to_string(string tab) const
 {
 	string result = "";
+
+	for (auto i = incl.begin(); i != incl.end(); i++) {
+		result += i->to_string(tab);
+	}
 
 	for (auto i = types.begin(); i != types.end(); i++) {
 		result += i->to_string(tab);
@@ -88,8 +108,8 @@ string source::to_string(string tab) const
 	return result;
 }
 
-parse::syntax *source::clone() const
-{
+parse::syntax *source::clone() const {
 	return new source(*this);
 }
+
 }

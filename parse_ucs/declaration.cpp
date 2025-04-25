@@ -8,6 +8,24 @@
 
 namespace parse_ucs {
 
+variable::variable() {
+}
+
+variable::variable(string name) {
+	this->name = name;
+}
+
+variable::~variable() {
+}
+
+string variable::to_string(string tab) const {
+	string result = name;
+	for (int i = 0; i < (int)size.size(); i++) {
+		result += "[" + size[i].to_string(tab) + "]";
+	}
+	return result;
+}
+
 declaration::declaration() {
 	debug_name = "declaration";
 }
@@ -29,6 +47,9 @@ void declaration::parse(tokenizer &tokens, void *data) {
 	tokens.increment(false);
 	tokens.expect(",");
 
+	tokens.increment(false);
+	tokens.expect("[");
+
 	tokens.increment(true);
 	tokens.expect<parse::instance>();
 
@@ -42,7 +63,29 @@ void declaration::parse(tokenizer &tokens, void *data) {
 
 	// variable name
 	if (tokens.decrement(__FILE__, __LINE__, data)) {
-		name.push_back(tokens.next());
+		name.push_back(variable(tokens.next()));
+	}
+
+	// [
+	while (tokens.decrement(__FILE__, __LINE__, data)) {
+		tokens.next();
+
+		tokens.increment(false);
+		tokens.expect("[");
+
+		tokens.increment(true);
+		tokens.expect("]");
+
+		tokens.increment(true);
+		tokens.expect<parse_expression::expression>();
+
+		if (tokens.decrement(__FILE__, __LINE__, data)) {
+			name.back().size.push_back(parse_expression::expression(tokens, 0, data));
+		}
+
+		if (tokens.decrement(__FILE__, __LINE__, data)) {
+			tokens.next();
+		}
 	}
 
 	while (tokens.decrement(__FILE__, __LINE__, data)) {
@@ -96,7 +139,16 @@ void declaration::parse(tokenizer &tokens, void *data) {
 }
 
 bool declaration::is_next(tokenizer &tokens, int i, void *data) {
-	return tokens.is_next<parse::instance>(i) and not tokens.is_next("(", i+1) and not tokens.is_next("func", i) and not tokens.is_next("struct", i);
+	return tokens.is_next<parse::instance>(i) and tokens.is_next<parse::instance>(i+1)
+		and not tokens.is_next("(", i+1)
+		and not tokens.is_next("func", i)
+		and not tokens.is_next("struct", i)
+		and not tokens.is_next("interface", i)
+		and not tokens.is_next("context", i)
+		and not tokens.is_next("await", i)
+		and not tokens.is_next("while", i)
+		and not tokens.is_next("region", i)
+		and not tokens.is_next("assume", i);
 }
 
 void declaration::register_syntax(tokenizer &tokens) {
@@ -117,7 +169,7 @@ string declaration::to_string(string tab) const {
 		if (i != name.begin()) {
 			result += ", ";
 		}
-		result += *i;
+		result += i->to_string(tab);
 	}
 	if (not reset.empty()) {
 		result += " = ";
