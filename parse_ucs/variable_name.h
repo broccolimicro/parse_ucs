@@ -1,22 +1,17 @@
-/*
- * variable_name.h
- *
- *  Created on: Jan 18, 2015
- *      Author: nbingham
- */
+#pragma once
 
 #include <parse/parse.h>
 #include <parse/syntax.h>
 #include "member_name.h"
 
-#ifndef parse_ucs_variable_name_h
-#define parse_ucs_variable_name_h
+#include <common/net.h>
 
 namespace parse_ucs
 {
 struct variable_name : parse::syntax
 {
 	variable_name();
+	variable_name(ucs::Net net);
 	variable_name(tokenizer &tokens, void *data = NULL);
 	~variable_name();
 
@@ -32,4 +27,3 @@ struct variable_name : parse::syntax
 };
 }
 
-#endif

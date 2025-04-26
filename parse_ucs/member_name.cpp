@@ -1,18 +1,19 @@
-/*
- * member_name.cpp
- *
- *  Created on: Jan 18, 2015
- *      Author: nbingham
- */
-
 #include "member_name.h"
 #include <parse/default/instance.h>
 
-namespace parse_ucs
-{
-member_name::member_name()
-{
+namespace parse_ucs {
+
+member_name::member_name() {
 	debug_name = "member_name";
+}
+
+member_name::member_name(ucs::Field field) {
+	debug_name = "member_name";
+	valid = true;
+	name = field.name;
+	for (int i = 0; i < (int)field.slice.size(); i++) {
+		slices.push_back(slice(field.slice[i]));
+	}
 }
 
 member_name::member_name(tokenizer &tokens, void *data)

@@ -9,13 +9,22 @@
 #include <parse/default/number.h>
 #include <parse/default/symbol.h>
 
-namespace parse_ucs
-{
-slice::slice()
-{
+namespace parse_ucs {
+
+slice::slice() {
 	debug_name = "slice";
 	lower = "";
 	upper = "";
+}
+
+slice::slice(int lo, int hi) {
+	debug_name = "slice";
+	valid = true;
+	lower = ::to_string(lo);
+	upper = lower;
+	if (hi > lo) {
+		upper = ::to_string(hi);
+	}
 }
 
 slice::slice(tokenizer &tokens, void *data)

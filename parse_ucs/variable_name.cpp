@@ -1,20 +1,21 @@
-/*
- * variable_name.cpp
- *
- *  Created on: Jan 18, 2015
- *      Author: nbingham
- */
-
 #include "variable_name.h"
 #include <parse/default/instance.h>
 #include <parse/default/symbol.h>
 #include <parse/default/number.h>
 
-namespace parse_ucs
-{
-variable_name::variable_name()
-{
+namespace parse_ucs {
+
+variable_name::variable_name() {
 	debug_name = "variable_name";
+}
+
+variable_name::variable_name(ucs::Net net) {
+	debug_name = "variable_name";
+	valid = true;
+	region = ::to_string(net.region);
+	for (int i = 0; i < (int)net.fields.size(); i++) {
+		names.push_back(net.fields[i]);
+	}
 }
 
 variable_name::variable_name(tokenizer &tokens, void *data)

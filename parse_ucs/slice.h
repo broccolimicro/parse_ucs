@@ -1,21 +1,14 @@
-/*
- * slice.h
- *
- *  Created on: Jan 18, 2015
- *      Author: nbingham
- */
+#pragma once
 
 #include <parse/parse.h>
 #include <parse/syntax.h>
-
-#ifndef parse_ucs_slice_h
-#define parse_ucs_slice_h
 
 namespace parse_ucs
 {
 struct slice : parse::syntax
 {
 	slice();
+	slice(int lo, int hi=-1);
 	slice(tokenizer &tokens, void *data = NULL);
 	~slice();
 
@@ -31,4 +24,3 @@ struct slice : parse::syntax
 };
 }
 
-#endif
