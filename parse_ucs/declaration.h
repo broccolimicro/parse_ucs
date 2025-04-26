@@ -4,6 +4,7 @@
 #include <parse/syntax.h>
 
 #include <parse_expression/expression.h>
+#include "type_name.h"
 
 namespace parse_ucs {
 
@@ -24,7 +25,7 @@ struct declaration : parse::syntax
 	declaration(tokenizer &tokens, void *data = NULL);
 	~declaration();
 
-	string type;
+	type_name type;
 	vector<variable> name;
 	vector<parse_expression::expression> reset;
 

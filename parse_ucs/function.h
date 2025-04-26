@@ -4,6 +4,7 @@
 #include <parse/syntax.h>
 
 #include "declaration.h"
+#include "type_name.h"
 
 namespace parse_ucs
 {
@@ -33,7 +34,7 @@ struct function : parse::syntax
 	string name;
 	string recv;
 	vector<declaration> args;
-	string ret;
+	type_name ret;
 
 	string impl;
 

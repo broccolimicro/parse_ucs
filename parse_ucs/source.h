@@ -15,6 +15,7 @@ struct source : parse::syntax
 	source(tokenizer &tokens, void *data = NULL);
 	~source();
 
+	string name;
 	vector<include> incl;
 	vector<datatype> types;
 	vector<function> funcs;

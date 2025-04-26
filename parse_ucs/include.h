@@ -11,7 +11,7 @@ struct include : parse::syntax
 	include(tokenizer &tokens, void *data = NULL);
 	~include();
 
-	vector<string> path;
+	vector<pair<string, string> > path;
 
 	void parse(tokenizer &tokens, void *data = NULL);
 	static bool is_next(tokenizer &tokens, int i = 1, void *data = NULL);

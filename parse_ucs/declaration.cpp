@@ -54,11 +54,11 @@ void declaration::parse(tokenizer &tokens, void *data) {
 	tokens.expect<parse::instance>();
 
 	tokens.increment(true);
-	tokens.expect<parse::instance>();
+	tokens.expect<type_name>();
 
 	// type name
 	if (tokens.decrement(__FILE__, __LINE__, data)) {
-		type = tokens.next();
+		type.parse(tokens, data);
 	}
 
 	// variable name
@@ -139,8 +139,7 @@ void declaration::parse(tokenizer &tokens, void *data) {
 }
 
 bool declaration::is_next(tokenizer &tokens, int i, void *data) {
-	return tokens.is_next<parse::instance>(i) and tokens.is_next<parse::instance>(i+1)
-		and not tokens.is_next("(", i+1)
+	if (not (type_name::is_next(tokens, i, data)
 		and not tokens.is_next("func", i)
 		and not tokens.is_next("struct", i)
 		and not tokens.is_next("interface", i)
@@ -148,23 +147,39 @@ bool declaration::is_next(tokenizer &tokens, int i, void *data) {
 		and not tokens.is_next("await", i)
 		and not tokens.is_next("while", i)
 		and not tokens.is_next("region", i)
-		and not tokens.is_next("assume", i);
+		and not tokens.is_next("assume", i))) {
+		return false;
+	}
+
+	int exp = 0;
+	string tok;
+	while ((tok = tokens.peek(++i)) != "") {
+		if ((exp == 0 and tok == ".") or (exp == 1 and tokens.is_next<parse::instance>(i))) {
+			exp = 1-exp;
+			continue;
+		} else if (exp == 0 and tokens.is_next<parse::instance>(i)) {
+			return true;
+		} else if (tokens.is_next<parse::symbol>(i) or tokens.is_next<parse::new_line>(i)) {
+			return false;
+		}
+	}
+	return false;
 }
 
 void declaration::register_syntax(tokenizer &tokens) {
-	if (!tokens.syntax_registered<declaration>())
-	{
+	if (!tokens.syntax_registered<declaration>()) {
 		tokens.register_syntax<declaration>();
 		tokens.register_token<parse::symbol>();
 		tokens.register_token<parse::instance>();
 		tokens.register_token<parse::white_space>(false);
 		tokens.register_token<parse::new_line>(true);
+		type_name::register_syntax(tokens);
 		parse_expression::expression::register_syntax(tokens);
 	}
 }
 
 string declaration::to_string(string tab) const {
-	string result = type + " ";
+	string result = type.to_string(tab) + " ";
 	for (auto i = name.begin(); i != name.end(); i++) {
 		if (i != name.begin()) {
 			result += ", ";
@@ -184,8 +199,7 @@ string declaration::to_string(string tab) const {
 	return result;
 }
 
-parse::syntax *declaration::clone() const
-{
+parse::syntax *declaration::clone() const {
 	return new declaration(*this);
 }
 

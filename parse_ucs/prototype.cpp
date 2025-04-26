@@ -24,7 +24,7 @@ void prototype::parse(tokenizer &tokens, void *data) {
 	tokens.syntax_start(this);
 	
 	tokens.increment(false);
-	tokens.expect<parse::instance>();
+	tokens.expect<type_name>();
 
 	tokens.increment(true);
 	tokens.expect(")");
@@ -75,7 +75,7 @@ void prototype::parse(tokenizer &tokens, void *data) {
 
 	// return type
 	if (tokens.decrement(__FILE__, __LINE__, data)) {
-		ret = tokens.next();
+		ret.parse(tokens, data);
 	}
 
 	tokens.syntax_end(this);
@@ -107,8 +107,8 @@ string prototype::to_string(string tab) const {
 	}
 	result += ")";
 
-	if (ret != "") {
-		result += " " + ret;
+	if (ret.valid) {
+		result += " " + ret.to_string(tab);
 	}
 
 	return result;

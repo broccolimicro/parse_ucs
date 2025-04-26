@@ -43,6 +43,9 @@ void include::parse(tokenizer &tokens, void *data) {
 		tokens.expect(")");
 
 		tokens.increment(false);
+		tokens.expect("as");
+
+		tokens.increment(false);
 		tokens.expect<parse::text>();
 
 		tokens.increment(true);
@@ -53,7 +56,18 @@ void include::parse(tokenizer &tokens, void *data) {
 		}
 
 		while (tokens.decrement(__FILE__, __LINE__, data)) {
-			path.push_back(tokens.next());
+			path.push_back({"", tokens.next()});
+
+			if (tokens.decrement(__FILE__, __LINE__, data)) {
+				tokens.next();
+
+				tokens.increment(true);
+				tokens.expect<parse::instance>();
+	
+				if (tokens.decrement(__FILE__, __LINE__, data)) {
+					path.back().first = tokens.next();
+				}
+			}
 
 			tokens.increment(false);
 			tokens.expect<parse::text>();
@@ -70,11 +84,25 @@ void include::parse(tokenizer &tokens, void *data) {
 			tokens.next();
 		}
 	} else {
+		tokens.increment(false);
+		tokens.expect("as");
+
 		tokens.increment(true);
 		tokens.expect<parse::text>();
 
 		if (tokens.decrement(__FILE__, __LINE__, data)) {
-			path.push_back(tokens.next());
+			path.push_back({"", tokens.next()});
+
+			if (tokens.decrement(__FILE__, __LINE__, data)) {
+				tokens.next();
+
+				tokens.increment(true);
+				tokens.expect<parse::instance>();
+	
+				if (tokens.decrement(__FILE__, __LINE__, data)) {
+					path.back().first = tokens.next();
+				}
+			}
 		}
 	}
 
@@ -95,6 +123,7 @@ void include::register_syntax(tokenizer &tokens) {
 		tokens.register_syntax<include>();
 		tokens.register_token<parse::symbol>();
 		tokens.register_token<parse::text>();
+		tokens.register_token<parse::instance>();
 		tokens.register_token<parse::white_space>(false);
 		tokens.register_token<parse::new_line>(true);
 	}
@@ -103,7 +132,11 @@ void include::register_syntax(tokenizer &tokens) {
 string include::to_string(string tab) const {
 	string result = "import (\n";
 	for (auto i = path.begin(); i != path.end(); i++) {
-		result += tab + "\t" + *i + "\n";
+		result += tab + "\t" + i->second;
+		if (i->first != "") {
+			result += " as " + i->first;
+		}
+		result += "\n";
 	}
 	result += tab + ")\n";
 	return result;

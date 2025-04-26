@@ -82,7 +82,7 @@ void function::parse(tokenizer &tokens, void *data)
 	tokens.expect(":");
 
 	tokens.increment(false);
-	tokens.expect<parse::instance>();
+	tokens.expect<type_name>();
 
 	tokens.increment(true);
 	tokens.expect(")");
@@ -167,7 +167,7 @@ void function::parse(tokenizer &tokens, void *data)
 
 	// return type
 	if (tokens.decrement(__FILE__, __LINE__, data)) {
-		ret = tokens.next();
+		ret.parse(tokens, data);
 	}
 
 	// ":"
@@ -189,7 +189,7 @@ void function::parse(tokenizer &tokens, void *data)
 
 	if (iter != registry.end())
 	{
-		tokens.increment(true);
+		tokens.increment(false);
 		iter->second.expect(tokens);
 
 		if (tokens.decrement(__FILE__, __LINE__, data)) {
@@ -231,6 +231,7 @@ void function::register_syntax(tokenizer &tokens)
 		tokens.register_token<parse::instance>();
 		tokens.register_token<parse::white_space>(false);
 		tokens.register_token<parse::new_line>(true);
+		type_name::register_syntax(tokens);
 		for (auto i = registry.begin(); i != registry.end(); i++) {
 			i->second.register_syntax(tokens);
 		}
@@ -258,8 +259,8 @@ string function::to_string(string tab) const {
 
 	result += ")";
 
-	if (ret != "") {
-		result += " " + ret;
+	if (ret.valid) {
+		result += " " + ret.to_string(tab);
 	}
 
 	if (impl != "") {

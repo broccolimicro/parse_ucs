@@ -43,7 +43,7 @@ void source::parse(tokenizer &tokens, void *data)
 		tokens.expect<parse::new_line>();
 	}
 
-	tokens.increment(true);
+	tokens.increment(false);
 	tokens.expect<function>();
 	tokens.expect<datatype>();
 	tokens.expect<parse::new_line>();
@@ -65,8 +65,7 @@ void source::parse(tokenizer &tokens, void *data)
 	tokens.syntax_end(this);
 }
 
-bool source::is_next(tokenizer &tokens, int i, void *data)
-{
+bool source::is_next(tokenizer &tokens, int i, void *data) {
 	while (tokens.is_next<parse::new_line>(i)) {
 		i++;
 	}
