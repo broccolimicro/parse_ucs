@@ -37,4 +37,23 @@ struct declaration : parse::syntax
 	parse::syntax *clone() const;
 };
 
+struct inline_declaration : parse::syntax
+{
+	inline_declaration();
+	inline_declaration(tokenizer &tokens, void *data = NULL);
+	~inline_declaration();
+
+	type_name type;
+	vector<variable> name;
+	vector<parse_expression::expression> reset;
+
+	void parse(tokenizer &tokens, void *data = NULL);
+	static bool is_next(tokenizer &tokens, int i = 1, void *data = NULL);
+	static void register_syntax(tokenizer &tokens);
+
+	string to_string(string tab = "") const;
+	parse::syntax *clone() const;
+};
+
+
 }
