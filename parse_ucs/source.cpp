@@ -5,27 +5,21 @@
 #include <parse/default/white_space.h>
 #include <parse/default/new_line.h>
 
-namespace parse_ucs
-{
+namespace parse_ucs {
 
-source::source()
-{
+source::source() {
 	debug_name = "source";
 }
 
-source::source(tokenizer &tokens, void *data)
-{
+source::source(tokenizer &tokens, void *data) {
 	debug_name = "source";
 	parse(tokens, data);
 }
 
-source::~source()
-{
-
+source::~source() {
 }
 
-void source::parse(tokenizer &tokens, void *data)
-{
+void source::parse(tokenizer &tokens, void *data) {
 	tokens.syntax_start(this);
 
 	tokens.increment(false);
@@ -73,10 +67,8 @@ bool source::is_next(tokenizer &tokens, int i, void *data) {
 	return include::is_next(tokens, i, data) or datatype::is_next(tokens, i, data) or function::is_next(tokens, i, data);
 }
 
-void source::register_syntax(tokenizer &tokens)
-{
-	if (!tokens.syntax_registered<source>())
-	{
+void source::register_syntax(tokenizer &tokens) {
+	if (!tokens.syntax_registered<source>()) {
 		tokens.register_syntax<source>();
 		tokens.register_token<parse::white_space>(false);
 		tokens.register_token<parse::new_line>(true);
@@ -86,8 +78,7 @@ void source::register_syntax(tokenizer &tokens)
 	}
 }
 
-string source::to_string(string tab) const
-{
+string source::to_string(string tab) const {
 	string result = "";
 
 	for (auto i = incl.begin(); i != incl.end(); i++) {

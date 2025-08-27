@@ -11,6 +11,7 @@ struct include : parse::syntax
 	include(tokenizer &tokens, void *data = NULL);
 	~include();
 
+	// alias, module
 	vector<pair<string, string> > path;
 
 	void parse(tokenizer &tokens, void *data = NULL);
