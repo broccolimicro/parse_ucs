@@ -171,15 +171,18 @@ void function::parse(tokenizer &tokens, void *data)
 	}
 
 	// ":"
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	while (tokens.decrement(__FILE__, __LINE__, data)) {
 		tokens.next();
 
 		tokens.increment(true);
-		tokens.expect<parse::instance>();
+		tokens.expect<type_name>();
 
 		if (tokens.decrement(__FILE__, __LINE__, data)) {
-			impl = tokens.next();
+			impl.push_back(type_name(tokens, data));
 		}
+
+		tokens.increment(false);
+		tokens.expect(",");
 	}
 
 	// "{"
@@ -263,8 +266,14 @@ string function::to_string(string tab) const {
 		result += " " + ret.to_string(tab);
 	}
 
-	if (impl != "") {
-		result += " : " + impl;
+	if (not impl.empty()) {
+		for (int i = 0; i < (int)impl.size(); i++) {
+			if (i == 0) {
+				result += " : " + impl[i].to_string("");
+			} else {
+				result += ", " + impl[i].to_string("");
+			}
+		}
 	}
 
 	result += " {\n";

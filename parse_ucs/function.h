@@ -36,7 +36,7 @@ struct function : parse::syntax
 	vector<declaration> args;
 	type_name ret;
 
-	string impl;
+	vector<type_name> impl;
 
 	parse::syntax *body;
 
