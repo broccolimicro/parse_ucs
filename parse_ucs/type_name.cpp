@@ -6,11 +6,11 @@
 namespace parse_ucs {
 
 type_name::type_name() {
-	debug_name = "type_name";
+	debug_name = "wv_type_name";
 }
 
 type_name::type_name(tokenizer &tokens, void *data) {
-	debug_name = "type_name";
+	debug_name = "wv_type_name";
 	parse(tokens, data);
 }
 

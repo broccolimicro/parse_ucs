@@ -8,11 +8,11 @@
 namespace parse_ucs {
 
 source::source() {
-	debug_name = "source";
+	debug_name = "wv_source";
 }
 
 source::source(tokenizer &tokens, void *data) {
-	debug_name = "source";
+	debug_name = "wv_source";
 	parse(tokens, data);
 }
 

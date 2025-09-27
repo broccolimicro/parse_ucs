@@ -9,11 +9,11 @@
 namespace parse_ucs {
 
 attribute::attribute() {
-	debug_name = "attribute";
+	debug_name = "wv_attribute";
 }
 
 attribute::attribute(tokenizer &tokens, void *data) {
-	debug_name = "attribute";
+	debug_name = "wv_attribute";
 	parse(tokens, data);
 }
 

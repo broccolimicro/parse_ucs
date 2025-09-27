@@ -31,7 +31,7 @@ language::~language()
 
 function::function()
 {
-	debug_name = "function";
+	debug_name = "wv_function";
 	body = nullptr;
 }
 
@@ -50,7 +50,7 @@ function::function(const function &cpy) : parse::syntax(cpy) {
 
 function::function(tokenizer &tokens, void *data)
 {
-	debug_name = "function";
+	debug_name = "wv_function";
 	body = nullptr;
 	parse(tokens, data);
 }

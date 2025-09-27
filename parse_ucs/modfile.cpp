@@ -10,12 +10,12 @@ namespace parse_ucs
 
 modfile::modfile()
 {
-	debug_name = "modfile";
+	debug_name = "wv_modfile";
 }
 
 modfile::modfile(tokenizer &tokens, void *data)
 {
-	debug_name = "modfile";
+	debug_name = "wv_modfile";
 	parse(tokens, data);
 }
 

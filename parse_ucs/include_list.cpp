@@ -8,11 +8,11 @@
 namespace parse_ucs {
 
 include_list::include_list() {
-	debug_name = "include_list";
+	debug_name = "wv_include_list";
 }
 
 include_list::include_list(tokenizer &tokens, void *data) {
-	debug_name = "include_list";
+	debug_name = "wv_include_list";
 	parse(tokens, data);
 }
 

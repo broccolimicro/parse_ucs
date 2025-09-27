@@ -9,11 +9,11 @@
 namespace parse_ucs {
 
 include::include() {
-	debug_name = "include";
+	debug_name = "wv_include";
 }
 
 include::include(tokenizer &tokens, void *data) {
-	debug_name = "include";
+	debug_name = "wv_include";
 	parse(tokens, data);
 }
 

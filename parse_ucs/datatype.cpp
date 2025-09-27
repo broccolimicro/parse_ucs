@@ -9,13 +9,13 @@ namespace parse_ucs
 {
 datatype::datatype()
 {
-	debug_name = "datatype";
+	debug_name = "wv_datatype";
 	isInterface = false;
 }
 
 datatype::datatype(tokenizer &tokens, void *data)
 {
-	debug_name = "datatype";
+	debug_name = "wv_datatype";
 	isInterface = false;
 	parse(tokens, data);
 }

@@ -9,11 +9,11 @@
 namespace parse_ucs {
 
 require::require() {
-	debug_name = "require";
+	debug_name = "wv_require";
 }
 
 require::require(tokenizer &tokens, void *data) {
-	debug_name = "require";
+	debug_name = "wv_require";
 	parse(tokens, data);
 }
 

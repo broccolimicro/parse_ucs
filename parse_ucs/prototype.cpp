@@ -9,11 +9,11 @@
 namespace parse_ucs {
 
 prototype::prototype() {
-	debug_name = "prototype";
+	debug_name = "wv_prototype";
 }
 
 prototype::prototype(tokenizer &tokens, void *data) {
-	debug_name = "prototype";
+	debug_name = "wv_prototype";
 	parse(tokens, data);
 }
 

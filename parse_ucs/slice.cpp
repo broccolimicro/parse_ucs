@@ -12,13 +12,13 @@
 namespace parse_ucs {
 
 slice::slice() {
-	debug_name = "slice";
+	debug_name = "wv_slice";
 	lower = "";
 	upper = "";
 }
 
 slice::slice(int lo, int hi) {
-	debug_name = "slice";
+	debug_name = "wv_slice";
 	valid = true;
 	lower = ::to_string(lo);
 	upper = lower;
@@ -29,7 +29,7 @@ slice::slice(int lo, int hi) {
 
 slice::slice(tokenizer &tokens, void *data)
 {
-	debug_name = "slice";
+	debug_name = "wv_slice";
 	lower = "";
 	upper = "";
 	parse(tokens, data);

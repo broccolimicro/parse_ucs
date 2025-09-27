@@ -4,12 +4,13 @@
 #include <parse/syntax.h>
 #include "declaration.h"
 #include "prototype.h"
+#include "expression.h"
 
-namespace parse_ucs
-{
+namespace parse_ucs {
 
-struct datatype : parse::syntax
-{
+struct datatype : parse::syntax {
+	using declaration=parse_ucs::declaration_t<expression>;
+
 	datatype();
 	datatype(tokenizer &tokens, void *data = NULL);
 	~datatype();

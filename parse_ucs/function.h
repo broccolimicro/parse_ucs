@@ -5,6 +5,7 @@
 
 #include "declaration.h"
 #include "type_name.h"
+#include "expression.h"
 
 namespace parse_ucs
 {
@@ -23,8 +24,9 @@ struct language
 // This represent **desired behaviors**
 // 1. Behavioral
 // 2. Functional
-struct function : parse::syntax
-{
+struct function : parse::syntax {
+	using declaration=parse_ucs::declaration_t<expression>;
+
 	function();
 	function(const function &cpy);
 	function(tokenizer &tokens, void *data = NULL);
