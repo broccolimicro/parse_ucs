@@ -6,6 +6,7 @@
 #include "declaration.h"
 #include "type_name.h"
 #include "expression.h"
+#include "signature.h"
 
 namespace parse_ucs
 {
@@ -38,7 +39,7 @@ struct function : parse::syntax {
 	vector<declaration> args;
 	type_name ret;
 
-	vector<type_name> impl;
+	vector<signature> impl;
 
 	parse::syntax *body;
 

@@ -45,7 +45,7 @@ struct declaration_t : parse::syntax {
 	}
 
 	declaration_t(tokenizer &tokens, void *data=nullptr) {
-		debug_name = "wv_declaration_";
+		debug_name = "wv_declaration";
 		parse(tokens, data);
 	}
 

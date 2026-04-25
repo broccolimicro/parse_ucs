@@ -27,20 +27,15 @@ void type_name::parse(tokenizer &tokens, void *data) {
 	tokens.expect<parse::instance>();
 
 	if (tokens.decrement(__FILE__, __LINE__, data)) {
-		names.push_back(tokens.next());
+		name = tokens.next();
 	}
 
-	while (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__, data)) {
 		tokens.next();
 
-		tokens.increment(false);
-		tokens.expect(".");
-
-		tokens.increment(true);
-		tokens.expect<parse::instance>();
-
 		if (tokens.decrement(__FILE__, __LINE__, data)) {
-			names.push_back(tokens.next());
+			mod = name;
+			name = tokens.next();
 		}
 	}
 
@@ -60,15 +55,7 @@ void type_name::register_syntax(tokenizer &tokens) {
 }
 
 string type_name::to_string(string tab) const {
-	string result;
-	if (names.size() > 0) {
-		result = names[0];
-	}
-
-	for (int i = 1; i < (int)names.size(); i++) {
-		result += "." + names[i];
-	}
-	return result;
+	return (mod.empty() ? std::string("") : (mod + ".")) + name;
 }
 
 parse::syntax *type_name::clone() const {

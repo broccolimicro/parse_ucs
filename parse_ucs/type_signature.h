@@ -3,15 +3,20 @@
 #include <parse/parse.h>
 #include <parse/syntax.h>
 
+#include <parse_expression/expression.h>
+#include "declaration.h"
+#include "type_name.h"
+#include "expression.h"
+
 namespace parse_ucs {
 
-struct type_name : parse::syntax {
-	type_name();
-	type_name(tokenizer &tokens, void *data = NULL);
-	~type_name();
+struct type_signature : parse::syntax {
+	type_signature();
+	type_signature(tokenizer &tokens, void *data = NULL);
+	~type_signature();
 
-	string mod;
-	string name;
+	type_name type;
+	vector<expression> size;
 
 	void parse(tokenizer &tokens, void *data = NULL);
 	static bool is_next(tokenizer &tokens, int i = 1, void *data = NULL);

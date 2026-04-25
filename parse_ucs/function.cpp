@@ -174,15 +174,15 @@ void function::parse(tokenizer &tokens, void *data)
 	while (tokens.decrement(__FILE__, __LINE__, data)) {
 		tokens.next();
 
-		tokens.increment(true);
-		tokens.expect<type_name>();
-
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
-			impl.push_back(type_name(tokens, data));
-		}
-
 		tokens.increment(false);
 		tokens.expect(",");
+
+		tokens.increment(true);
+		tokens.expect<signature>();
+
+		if (tokens.decrement(__FILE__, __LINE__, data)) {
+			impl.push_back(signature(tokens, data));
+		}
 	}
 
 	// "{"
