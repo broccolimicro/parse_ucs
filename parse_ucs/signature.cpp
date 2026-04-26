@@ -106,6 +106,7 @@ void signature::register_syntax(tokenizer &tokens) {
 		tokens.register_token<parse::instance>();
 		tokens.register_token<parse::white_space>(false);
 		tokens.register_token<parse::new_line>(true);
+		type_name::register_syntax(tokens);
 		type_signature::register_syntax(tokens);
 	}
 }

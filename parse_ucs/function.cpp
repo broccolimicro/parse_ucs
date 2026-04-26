@@ -234,7 +234,7 @@ void function::register_syntax(tokenizer &tokens)
 		tokens.register_token<parse::instance>();
 		tokens.register_token<parse::white_space>(false);
 		tokens.register_token<parse::new_line>(true);
-		type_name::register_syntax(tokens);
+		signature::register_syntax(tokens);
 		for (auto i = registry.begin(); i != registry.end(); i++) {
 			i->second.register_syntax(tokens);
 		}
