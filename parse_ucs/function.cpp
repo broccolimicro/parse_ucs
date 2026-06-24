@@ -5,42 +5,33 @@
 #include <parse/default/white_space.h>
 #include <parse/default/new_line.h>
 
-namespace parse_ucs
-{
+namespace parse_ucs {
 
 map<string, language> function::registry;
 
-language::language()
-{
+language::language() {
 	factory = NULL;
 	expect = NULL;
 	register_syntax = NULL;
 }
 
-language::language(parse::syntax *(*factory)(tokenizer&, void*), void (*expect)(tokenizer&), void (*register_syntax)(tokenizer&))
-{
+language::language(parse::syntax *(*factory)(tokenizer&, void*), void (*expect)(tokenizer&), void (*register_syntax)(tokenizer&)) {
 	this->factory = factory;
 	this->expect = expect;
 	this->register_syntax = register_syntax;
 }
 
-language::~language()
-{
-
+language::~language() {
 }
 
-function::function()
-{
+function::function() {
 	debug_name = "wv_function";
 	body = nullptr;
 }
 
 function::function(const function &cpy) : parse::syntax(cpy) {
 	lang = cpy.lang;
-	name = cpy.name;
-	recv = cpy.recv;
-	args = cpy.args;
-	ret = cpy.ret;
+	decl = cpy.decl;
 	if (cpy.body != nullptr) {
 		body = cpy.body->clone();
 	} else {
@@ -48,23 +39,20 @@ function::function(const function &cpy) : parse::syntax(cpy) {
 	}
 }
 
-function::function(tokenizer &tokens, void *data)
-{
+function::function(tokenizer &tokens, void *data) {
 	debug_name = "wv_function";
 	body = nullptr;
 	parse(tokens, data);
 }
 
-function::~function()
-{
+function::~function() {
 	if (body != nullptr) {
 		delete body;
 	}
 	body = nullptr;
 }
 
-void function::parse(tokenizer &tokens, void *data)
-{
+void function::parse(tokenizer &tokens, void *data) {
 	auto iter = registry.end();
 
 	tokens.syntax_start(this);
@@ -81,23 +69,8 @@ void function::parse(tokenizer &tokens, void *data)
 	tokens.increment(false);
 	tokens.expect(":");
 
-	tokens.increment(false);
-	tokens.expect<type_name>();
-
 	tokens.increment(true);
-	tokens.expect(")");
-
-	tokens.increment(false);
-	tokens.expect<declaration>();
-
-	tokens.increment(true);
-	tokens.expect("(");
-
-	tokens.increment(false);
-	tokens.expect("::");
-
-	tokens.increment(true);
-	tokens.expect<parse::instance>();
+	tokens.expect<function_decl>();
 
 	tokens.increment(true);
 	for (auto i = registry.begin(); i != registry.end(); i++) {
@@ -114,60 +87,9 @@ void function::parse(tokenizer &tokens, void *data)
 		}
 	}
 
-	// name of function
+	// function declaration
 	if (tokens.decrement(__FILE__, __LINE__, data)) {
-		name = tokens.next();
-	}
-
-	// receiver
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
-		recv = name;
-
-		tokens.next();
-
-		tokens.increment(true);
-		tokens.expect<parse::instance>();
-
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
-			name = tokens.next();
-		}
-	}
-
-	// "("
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
-		tokens.next();
-	}
-
-	// arguments
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
-		args.push_back(declaration(tokens, data));
-
-		tokens.increment(false);
-		tokens.expect(";");
-
-		while (tokens.decrement(__FILE__, __LINE__, data)) {
-			tokens.next();
-
-			tokens.increment(true);
-			tokens.expect<declaration>();
-
-			if (tokens.decrement(__FILE__, __LINE__, data)) {
-				args.push_back(declaration(tokens, data));
-			}
-
-			tokens.increment(false);
-			tokens.expect(";");
-		}
-	}
-
-	// ")"
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
-		tokens.next();
-	}
-
-	// return type
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
-		ret.parse(tokens, data);
+		decl.parse(tokens, data);
 	}
 
 	// ":"
@@ -190,8 +112,7 @@ void function::parse(tokenizer &tokens, void *data)
 		tokens.next();
 	}
 
-	if (iter != registry.end())
-	{
+	if (iter != registry.end()) {
 		tokens.increment(false);
 		iter->second.expect(tokens);
 
@@ -208,14 +129,14 @@ void function::parse(tokenizer &tokens, void *data)
 	}
 
 	// "}"
-	if (tokens.decrement(__FILE__, __LINE__, data))
+	if (tokens.decrement(__FILE__, __LINE__, data)) {
 		tokens.next();
+	}
 
 	tokens.syntax_end(this);
 }
 
-bool function::is_next(tokenizer &tokens, int i, void *data)
-{
+bool function::is_next(tokenizer &tokens, int i, void *data) {
 	bool result = false;
 
 	for (auto j = registry.begin(); j != registry.end(); j++) {
@@ -225,16 +146,15 @@ bool function::is_next(tokenizer &tokens, int i, void *data)
 	return result;
 }
 
-void function::register_syntax(tokenizer &tokens)
-{
-	if (!tokens.syntax_registered<function>())
-	{
+void function::register_syntax(tokenizer &tokens) {
+	if (!tokens.syntax_registered<function>()) {
 		tokens.register_syntax<function>();
 		tokens.register_token<parse::symbol>();
 		tokens.register_token<parse::instance>();
 		tokens.register_token<parse::white_space>(false);
 		tokens.register_token<parse::new_line>(true);
 		signature::register_syntax(tokens);
+		function_decl::register_syntax(tokens);
 		for (auto i = registry.begin(); i != registry.end(); i++) {
 			i->second.register_syntax(tokens);
 		}
@@ -243,27 +163,11 @@ void function::register_syntax(tokenizer &tokens)
 
 string function::to_string(string tab) const {
 	string result = lang;
-
-	if (name != "") {
-		result += " ";
-		if (recv != "") {
-			result += recv + "::";
+	if (decl.valid) {
+		if (not decl.name.empty()) {
+			result += " ";
 		}
-		result += name;
-	}
-
-	result += "(";
-	for (auto i = args.begin(); i != args.end(); i++) {
-		if (i != args.begin()) {
-			result += "; ";
-		}
-		result += i->to_string(tab);
-	}
-
-	result += ")";
-
-	if (ret.valid) {
-		result += " " + ret.to_string(tab);
+		result += decl.to_string(tab);
 	}
 
 	if (not impl.empty()) {
@@ -287,8 +191,8 @@ string function::to_string(string tab) const {
 	return result;
 }
 
-parse::syntax *function::clone() const
-{
+parse::syntax *function::clone() const {
 	return new function(*this);
 }
+
 }
