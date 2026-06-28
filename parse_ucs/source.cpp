@@ -41,7 +41,7 @@ void source::parse(tokenizer &tokens, void *data) {
 	tokens.expect<function>();
 	tokens.expect<datatype>();
 	tokens.expect<parse::new_line>();
-	while (tokens.decrement(__FILE__, __LINE__)) {
+	while (tokens.decrement(__FILE__, __LINE__, data)) {
 		if (tokens.found<function>()) {
 			funcs.push_back(function(tokens, data));
 		} else if (tokens.found<datatype>()) {
@@ -67,12 +67,12 @@ bool source::is_next(tokenizer &tokens, int i, void *data) {
 	return include::is_next(tokens, i, data) or datatype::is_next(tokens, i, data) or function::is_next(tokens, i, data);
 }
 
-void source::register_syntax(tokenizer &tokens) {
+void source::register_syntax(tokenizer &tokens, const parse::registry *registry) {
 	if (!tokens.syntax_registered<source>()) {
 		tokens.register_syntax<source>();
 		tokens.register_token<parse::white_space>(false);
 		tokens.register_token<parse::new_line>(true);
-		function::register_syntax(tokens);
+		function::register_syntax(tokens, registry);
 		datatype::register_syntax(tokens);
 		include::register_syntax(tokens);
 	}

@@ -1,7 +1,6 @@
 #pragma once
 
-#include <parse/parse.h>
-#include <parse/syntax.h>
+#include <parse/factory.h>
 
 #include "declaration.h"
 #include "type_name.h"
@@ -9,19 +8,7 @@
 #include "signature.h"
 #include "function_decl.h"
 
-namespace parse_ucs
-{
-
-struct language
-{
-	language();
-	language(parse::syntax *(*factory)(tokenizer&, void*), void (*expect)(tokenizer&), void (*register_syntax)(tokenizer&));
-	~language();
-
-	parse::syntax *(*factory)(tokenizer&, void*);
-	void (*expect)(tokenizer&);
-	void (*register_syntax)(tokenizer&);
-};
+namespace parse_ucs {
 
 // This represent **desired behaviors**
 // 1. Behavioral
@@ -41,11 +28,9 @@ struct function : parse::syntax {
 
 	parse::syntax *body;
 
-	static map<string, language> registry;
-
 	void parse(tokenizer &tokens, void *data = NULL);
 	static bool is_next(tokenizer &tokens, int i = 1, void *data = NULL);
-	static void register_syntax(tokenizer &tokens);
+	static void register_syntax(tokenizer &tokens, const parse::registry *registry);
 
 	string to_string(string tab = "") const;
 	parse::syntax *clone() const;

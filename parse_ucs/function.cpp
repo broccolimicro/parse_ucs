@@ -7,23 +7,6 @@
 
 namespace parse_ucs {
 
-map<string, language> function::registry;
-
-language::language() {
-	factory = NULL;
-	expect = NULL;
-	register_syntax = NULL;
-}
-
-language::language(parse::syntax *(*factory)(tokenizer&, void*), void (*expect)(tokenizer&), void (*register_syntax)(tokenizer&)) {
-	this->factory = factory;
-	this->expect = expect;
-	this->register_syntax = register_syntax;
-}
-
-language::~language() {
-}
-
 function::function() {
 	debug_name = "wv_function";
 	body = nullptr;
@@ -53,7 +36,11 @@ function::~function() {
 }
 
 void function::parse(tokenizer &tokens, void *data) {
-	auto iter = registry.end();
+	const parse::registry *registry = (const parse::registry*)data;
+	if (registry == nullptr) {
+		tokens.internal("parsing registry not loaded", __FILE__, __LINE__);
+		return;
+	}
 
 	tokens.syntax_start(this);
 
@@ -73,16 +60,17 @@ void function::parse(tokenizer &tokens, void *data) {
 	tokens.expect<function_decl>();
 
 	tokens.increment(true);
-	for (auto i = registry.begin(); i != registry.end(); i++) {
-		tokens.expect(i->first);
+	for (std::string lang : registry->getParserIndex()) {
+		tokens.expect(lang);
 	}
 
 	// "func"
+	const parse::factory *ref = nullptr;
 	if (tokens.decrement(__FILE__, __LINE__, data))
 	{
 		lang = tokens.next();
-		iter = registry.find(lang);
-		if (iter == registry.end()) {
+		ref = registry->getParser(lang);
+		if (ref == nullptr) {
 			tokens.error("Parser for '" + lang + "' not registered.", __FILE__, __LINE__);
 		}
 	}
@@ -112,12 +100,12 @@ void function::parse(tokenizer &tokens, void *data) {
 		tokens.next();
 	}
 
-	if (iter != registry.end()) {
+	if (ref != nullptr) {
 		tokens.increment(false);
-		iter->second.expect(tokens);
+		ref->expect(tokens);
 
 		if (tokens.decrement(__FILE__, __LINE__, data)) {
-			body = iter->second.factory(tokens, data);
+			body = ref->produce(tokens, data);
 		}
 	}
 
@@ -137,16 +125,21 @@ void function::parse(tokenizer &tokens, void *data) {
 }
 
 bool function::is_next(tokenizer &tokens, int i, void *data) {
-	bool result = false;
-
-	for (auto j = registry.begin(); j != registry.end(); j++) {
-		result = result or tokens.is_next(j->first, i);
+	const parse::registry *registry = (const parse::registry*)data;
+	if (registry == nullptr) {
+		tokens.internal("parsing registry not loaded", __FILE__, __LINE__);
+		return false;
 	}
 
-	return result;
+	for (std::string lang : registry->getParserIndex()) {
+		if (tokens.is_next(lang, i)) {
+			return true;
+		}
+	}
+	return false;
 }
 
-void function::register_syntax(tokenizer &tokens) {
+void function::register_syntax(tokenizer &tokens, const parse::registry *registry) {
 	if (!tokens.syntax_registered<function>()) {
 		tokens.register_syntax<function>();
 		tokens.register_token<parse::symbol>();
@@ -155,8 +148,15 @@ void function::register_syntax(tokenizer &tokens) {
 		tokens.register_token<parse::new_line>(true);
 		signature::register_syntax(tokens);
 		function_decl::register_syntax(tokens);
-		for (auto i = registry.begin(); i != registry.end(); i++) {
-			i->second.register_syntax(tokens);
+		if (registry != nullptr) {
+			for (std::string name : registry->getParserIndex()) {
+				const parse::factory *lang = registry->getParser(name);
+				if (lang != nullptr) {
+					lang->register_syntax(tokens);
+				}
+			}
+		} else {
+			tokens.internal("parsing registry not loaded", __FILE__, __LINE__);
 		}
 	}
 }

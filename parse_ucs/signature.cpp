@@ -10,12 +10,12 @@ namespace parse_ucs {
 
 signature::signature() {
 	debug_name = "wv_signature";
-	unqualified = true;
+	qualified = false;
 }
 
 signature::signature(tokenizer &tokens, void *data) {
 	debug_name = "wv_signature";
-	unqualified = true;
+	qualified = false;
 	parse(tokens, data);
 }
 
@@ -54,7 +54,7 @@ void signature::parse(tokenizer &tokens, void *data) {
 	}
 
 	if (tokens.decrement(__FILE__, __LINE__, data)) {
-		unqualified = false;
+		qualified = true;
 		tokens.next();
 
 		tokens.increment(true);

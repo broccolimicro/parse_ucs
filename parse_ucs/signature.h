@@ -18,7 +18,7 @@ struct signature : parse::syntax {
 	type_name recv;
 	string name;
 	vector<type_signature> args;
-	bool unqualified;
+	bool qualified;
 
 	void parse(tokenizer &tokens, void *data = NULL);
 	static bool is_next(tokenizer &tokens, int i = 1, void *data = NULL);
