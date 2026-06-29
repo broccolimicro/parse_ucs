@@ -66,8 +66,7 @@ void function::parse(tokenizer &tokens, void *data) {
 
 	// "func"
 	const parse::factory *ref = nullptr;
-	if (tokens.decrement(__FILE__, __LINE__, data))
-	{
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		lang = tokens.next();
 		ref = registry->getParser(lang);
 		if (ref == nullptr) {
@@ -76,12 +75,12 @@ void function::parse(tokenizer &tokens, void *data) {
 	}
 
 	// function declaration
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
-		decl.parse(tokens, data);
+	if (tokens.decrement(__FILE__, __LINE__)) {
+		decl.parse(tokens);
 	}
 
 	// ":"
-	while (tokens.decrement(__FILE__, __LINE__, data)) {
+	while (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next();
 
 		tokens.increment(false);
@@ -90,13 +89,13 @@ void function::parse(tokenizer &tokens, void *data) {
 		tokens.increment(true);
 		tokens.expect<signature>();
 
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
-			impl.push_back(signature(tokens, data));
+		if (tokens.decrement(__FILE__, __LINE__)) {
+			impl.push_back(signature(tokens));
 		}
 	}
 
 	// "{"
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next();
 	}
 
@@ -104,12 +103,12 @@ void function::parse(tokenizer &tokens, void *data) {
 		tokens.increment(false);
 		ref->expect(tokens);
 
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
-			body = ref->produce(tokens, data);
+		if (tokens.decrement(__FILE__, __LINE__)) {
+			body = ref->produce(tokens, nullptr);
 		}
 	}
 
-	while (tokens.decrement(__FILE__, __LINE__, data)) {
+	while (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next();
 
 		tokens.increment(false);
@@ -117,7 +116,7 @@ void function::parse(tokenizer &tokens, void *data) {
 	}
 
 	// "}"
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next();
 	}
 
