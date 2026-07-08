@@ -104,7 +104,7 @@ void function::parse(tokenizer &tokens, void *data) {
 		ref->expect(tokens);
 
 		if (tokens.decrement(__FILE__, __LINE__)) {
-			body = ref->produce(tokens, nullptr);
+			body = ref->produce(tokens, ref->data);
 		}
 	}
 
