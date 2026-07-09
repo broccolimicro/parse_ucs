@@ -5,28 +5,21 @@
 #include <parse/default/white_space.h>
 #include <parse/default/new_line.h>
 
-namespace parse_ucs
-{
-datatype::datatype()
-{
+namespace parse_ucs {
+
+datatype::datatype() {
 	debug_name = "wv_datatype";
-	isInterface = false;
 }
 
-datatype::datatype(tokenizer &tokens, void *data)
-{
+datatype::datatype(tokenizer &tokens, void *data) {
 	debug_name = "wv_datatype";
-	isInterface = false;
 	parse(tokens, data);
 }
 
-datatype::~datatype()
-{
-
+datatype::~datatype() {
 }
 
-void datatype::parse(tokenizer &tokens, void *data)
-{
+void datatype::parse(tokenizer &tokens, void *data) {
 	tokens.syntax_start(this);
 
 	tokens.increment(true);
@@ -42,24 +35,26 @@ void datatype::parse(tokenizer &tokens, void *data)
 	tokens.expect("type");
 	tokens.expect("interface");
 
-	if (tokens.decrement(__FILE__, __LINE__, data))
-		isInterface = (tokens.next() == "interface");
+	if (tokens.decrement(__FILE__, __LINE__, data)) {
+		kind = tokens.next();
+	}
 
-	if (tokens.decrement(__FILE__, __LINE__, data))
+	if (tokens.decrement(__FILE__, __LINE__, data)) {
 		name = tokens.next();
+	}
 
-	if (tokens.decrement(__FILE__, __LINE__, data))
+	if (tokens.decrement(__FILE__, __LINE__, data)) {
 		tokens.next();
+	}
 
 	tokens.increment(false);
 	tokens.expect<parse::new_line>();
-	if (not isInterface) {
+	if (kind != "interface") {
 		tokens.expect<declaration>();
 	}
 	tokens.expect<prototype>();
 
-	while (tokens.decrement(__FILE__, __LINE__, data))
-	{
+	while (tokens.decrement(__FILE__, __LINE__, data)) {
 		if (tokens.found<parse::new_line>()) {
 			tokens.next();
 		} else if (tokens.found<prototype>()) {
@@ -69,28 +64,26 @@ void datatype::parse(tokenizer &tokens, void *data)
 		}
 
 		tokens.increment(false);
-		if (not isInterface) {
+		if (kind != "interface") {
 			tokens.expect<declaration>();
 		}
 		tokens.expect<prototype>();
 		tokens.expect<parse::new_line>();
 	}
 
-	if (tokens.decrement(__FILE__, __LINE__, data))
+	if (tokens.decrement(__FILE__, __LINE__, data)) {
 		tokens.next();
+	}
 
 	tokens.syntax_end(this);
 }
 
-bool datatype::is_next(tokenizer &tokens, int i, void *data)
-{
+bool datatype::is_next(tokenizer &tokens, int i, void *data) {
 	return tokens.is_next("type", i) or tokens.is_next("interface", i);
 }
 
-void datatype::register_syntax(tokenizer &tokens)
-{
-	if (!tokens.syntax_registered<datatype>())
-	{
+void datatype::register_syntax(tokenizer &tokens) {
+	if (!tokens.syntax_registered<datatype>()) {
 		tokens.register_syntax<datatype>();
 		tokens.register_token<parse::symbol>();
 		tokens.register_token<parse::instance>();
@@ -101,9 +94,8 @@ void datatype::register_syntax(tokenizer &tokens)
 	}
 }
 
-string datatype::to_string(string tab) const
-{
-	string result = (isInterface ? "interface" : "type");
+string datatype::to_string(string tab) const {
+	string result = kind;
 
 	if (name != "")
 		result += " " + name;
@@ -123,8 +115,8 @@ string datatype::to_string(string tab) const
 	return result;
 }
 
-parse::syntax *datatype::clone() const
-{
+parse::syntax *datatype::clone() const {
 	return new datatype(*this);
 }
+
 }

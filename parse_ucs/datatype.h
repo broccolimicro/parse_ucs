@@ -14,8 +14,9 @@ struct datatype : parse::syntax {
 	datatype();
 	datatype(tokenizer &tokens, void *data = NULL);
 	~datatype();
-	
-	bool isInterface;
+
+	// type, interface, or encoding	
+	string kind;
 	string name;
 	vector<declaration> members;
 	vector<prototype> protocols;
