@@ -13,7 +13,7 @@ struct function_decl : parse::syntax {
 	using declaration=parse_ucs::declaration_t<expression>;
 
 	function_decl();
-	function_decl(tokenizer &tokens, void *data = NULL);
+	function_decl(tokenizer &tokens, std::any data=std::any());
 	~function_decl();
 
 	string name;
@@ -21,8 +21,8 @@ struct function_decl : parse::syntax {
 	vector<declaration> args;
 	type_name ret;
 
-	void parse(tokenizer &tokens, void *data = NULL);
-	static bool is_next(tokenizer &tokens, int i = 1, void *data = NULL);
+	void parse(tokenizer &tokens, std::any data=std::any());
+	static bool is_next(tokenizer &tokens, int i = 1, std::any data=std::any());
 	static void register_syntax(tokenizer &tokens);
 
 	string to_string(string tab = "") const;

@@ -12,7 +12,7 @@ attribute::attribute() {
 	debug_name = "wv_attribute";
 }
 
-attribute::attribute(tokenizer &tokens, void *data) {
+attribute::attribute(tokenizer &tokens, std::any data) {
 	debug_name = "wv_attribute";
 	parse(tokens, data);
 }
@@ -20,7 +20,7 @@ attribute::attribute(tokenizer &tokens, void *data) {
 attribute::~attribute() {
 }
 
-void attribute::parse(tokenizer &tokens, void *data) {
+void attribute::parse(tokenizer &tokens, std::any data) {
 	tokens.syntax_start(this);
 	
 	tokens.increment(true);
@@ -32,22 +32,22 @@ void attribute::parse(tokenizer &tokens, void *data) {
 	tokens.increment(true);
 	tokens.expect<parse::instance>();
 	
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		name = tokens.next();
 	}
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		value = tokens.next();
 	}
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next();
 	}
 
 	tokens.syntax_end(this);
 }
 
-bool attribute::is_next(tokenizer &tokens, int i, void *data) {
+bool attribute::is_next(tokenizer &tokens, int i, std::any data) {
 	if (not tokens.is_next<parse::instance>(i)
 		or not tokens.is_next<parse::text>(i+1)) {
 		return false;

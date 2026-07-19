@@ -44,7 +44,7 @@ struct declaration_t : parse::syntax {
 		debug_name = "wv_declaration";
 	}
 
-	declaration_t(tokenizer &tokens, void *data=nullptr) {
+	declaration_t(tokenizer &tokens, std::any data=std::any()) {
 		debug_name = "wv_declaration";
 		parse(tokens, data);
 	}
@@ -52,7 +52,7 @@ struct declaration_t : parse::syntax {
 	~declaration_t() {
 	}
 
-	void parse(tokenizer &tokens, void *data=nullptr) {
+	void parse(tokenizer &tokens, std::any data=std::any()) {
 		tokens.syntax_start(this);
 
 		tokens.increment(false);
@@ -71,17 +71,17 @@ struct declaration_t : parse::syntax {
 		tokens.expect<type_name>();
 
 		// type name
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
+		if (tokens.decrement(__FILE__, __LINE__)) {
 			type.parse(tokens, data);
 		}
 
 		// variable name
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
+		if (tokens.decrement(__FILE__, __LINE__)) {
 			name.push_back(variable(tokens.next()));
 		}
 
 		// [
-		while (tokens.decrement(__FILE__, __LINE__, data)) {
+		while (tokens.decrement(__FILE__, __LINE__)) {
 			tokens.next();
 
 			tokens.increment(false);
@@ -93,16 +93,16 @@ struct declaration_t : parse::syntax {
 			tokens.increment(true);
 			tokens.expect<expression>();
 
-			if (tokens.decrement(__FILE__, __LINE__, data)) {
-				name.back().size.push_back(expression(tokens, 0, data));
+			if (tokens.decrement(__FILE__, __LINE__)) {
+				name.back().size.push_back(expression(tokens, data));
 			}
 
-			if (tokens.decrement(__FILE__, __LINE__, data)) {
+			if (tokens.decrement(__FILE__, __LINE__)) {
 				tokens.next();
 			}
 		}
 
-		while (tokens.decrement(__FILE__, __LINE__, data)) {
+		while (tokens.decrement(__FILE__, __LINE__)) {
 			tokens.next();
 
 			tokens.increment(false);
@@ -111,13 +111,13 @@ struct declaration_t : parse::syntax {
 			tokens.increment(true);
 			tokens.expect<parse::instance>();
 
-			if (tokens.decrement(__FILE__, __LINE__, data)) {
+			if (tokens.decrement(__FILE__, __LINE__)) {
 				name.push_back(tokens.next());
 			}
 		}
 
 		// reset behavior
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
+		if (tokens.decrement(__FILE__, __LINE__)) {
 			tokens.next();
 
 			if (reset.size()+1 < name.size()) {
@@ -128,11 +128,11 @@ struct declaration_t : parse::syntax {
 			tokens.increment(true);
 			tokens.expect<expression>();
 
-			if (tokens.decrement(__FILE__, __LINE__, data)) {
-				reset.push_back(expression(tokens, 0, data));
+			if (tokens.decrement(__FILE__, __LINE__)) {
+				reset.push_back(expression(tokens, data));
 			}
 
-			while (reset.size() < name.size() and tokens.decrement(__FILE__, __LINE__, data)) {
+			while (reset.size() < name.size() and tokens.decrement(__FILE__, __LINE__)) {
 				tokens.next();
 
 				if (reset.size()+1 < name.size()) {
@@ -143,8 +143,8 @@ struct declaration_t : parse::syntax {
 				tokens.increment(true);
 				tokens.expect<expression>();
 
-				if (tokens.decrement(__FILE__, __LINE__, data)) {
-					reset.push_back(expression(tokens, 0, data));
+				if (tokens.decrement(__FILE__, __LINE__)) {
+					reset.push_back(expression(tokens, data));
 				}
 			}
 		}
@@ -152,7 +152,7 @@ struct declaration_t : parse::syntax {
 		tokens.syntax_end(this);
 	}
 
-	static bool is_next(tokenizer &tokens, int i=1, void *data=nullptr) {
+	static bool is_next(tokenizer &tokens, int i=1, std::any data=std::any()) {
 		return type_name::is_next(tokens, i, data);
 	}
 

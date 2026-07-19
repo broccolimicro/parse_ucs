@@ -9,7 +9,7 @@ type_name::type_name() {
 	debug_name = "wv_type_name";
 }
 
-type_name::type_name(tokenizer &tokens, void *data) {
+type_name::type_name(tokenizer &tokens, std::any data) {
 	debug_name = "wv_type_name";
 	parse(tokens, data);
 }
@@ -17,7 +17,7 @@ type_name::type_name(tokenizer &tokens, void *data) {
 type_name::~type_name() {
 }
 
-void type_name::parse(tokenizer &tokens, void *data) {
+void type_name::parse(tokenizer &tokens, std::any data) {
 	tokens.syntax_start(this);
 
 	tokens.increment(false);
@@ -26,14 +26,14 @@ void type_name::parse(tokenizer &tokens, void *data) {
 	tokens.increment(true);
 	tokens.expect<parse::instance>();
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		name = tokens.next();
 	}
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next();
 
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
+		if (tokens.decrement(__FILE__, __LINE__)) {
 			mod = name;
 			name = tokens.next();
 		}
@@ -42,7 +42,7 @@ void type_name::parse(tokenizer &tokens, void *data) {
 	tokens.syntax_end(this);
 }
 
-bool type_name::is_next(tokenizer &tokens, int i, void *data) {
+bool type_name::is_next(tokenizer &tokens, int i, std::any data) {
 	return tokens.is_next<parse::instance>(i);
 }
 

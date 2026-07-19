@@ -8,14 +8,14 @@ namespace parse_ucs {
 struct include : parse::syntax
 {
 	include();
-	include(tokenizer &tokens, void *data = NULL);
+	include(tokenizer &tokens, std::any data=std::any());
 	~include();
 
 	// alias, module
 	vector<pair<string, string> > path;
 
-	void parse(tokenizer &tokens, void *data = NULL);
-	static bool is_next(tokenizer &tokens, int i = 1, void *data = NULL);
+	void parse(tokenizer &tokens, std::any data=std::any());
+	static bool is_next(tokenizer &tokens, int i = 1, std::any data=std::any());
 	static void register_syntax(tokenizer &tokens);
 
 	string to_string(string tab = "") const;

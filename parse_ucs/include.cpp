@@ -12,7 +12,7 @@ include::include() {
 	debug_name = "wv_include";
 }
 
-include::include(tokenizer &tokens, void *data) {
+include::include(tokenizer &tokens, std::any data) {
 	debug_name = "wv_include";
 	parse(tokens, data);
 }
@@ -20,7 +20,7 @@ include::include(tokenizer &tokens, void *data) {
 include::~include() {
 }
 
-void include::parse(tokenizer &tokens, void *data) {
+void include::parse(tokenizer &tokens, std::any data) {
 	tokens.syntax_start(this);
 	
 	tokens.increment(true);
@@ -32,11 +32,11 @@ void include::parse(tokenizer &tokens, void *data) {
 	tokens.increment(true);
 	tokens.expect("import");
 	
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next();
 	}
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next();
 		
 		tokens.increment(true);
@@ -51,20 +51,20 @@ void include::parse(tokenizer &tokens, void *data) {
 		tokens.increment(true);
 		tokens.expect<parse::new_line>();
 
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
+		if (tokens.decrement(__FILE__, __LINE__)) {
 			tokens.next();
 		}
 
-		while (tokens.decrement(__FILE__, __LINE__, data)) {
+		while (tokens.decrement(__FILE__, __LINE__)) {
 			path.push_back({"", tokens.next()});
 
-			if (tokens.decrement(__FILE__, __LINE__, data)) {
+			if (tokens.decrement(__FILE__, __LINE__)) {
 				tokens.next();
 
 				tokens.increment(true);
 				tokens.expect<parse::instance>();
 	
-				if (tokens.decrement(__FILE__, __LINE__, data)) {
+				if (tokens.decrement(__FILE__, __LINE__)) {
 					path.back().first = tokens.next();
 				}
 			}
@@ -75,12 +75,12 @@ void include::parse(tokenizer &tokens, void *data) {
 			tokens.increment(true);
 			tokens.expect<parse::new_line>();
 
-			if (tokens.decrement(__FILE__, __LINE__, data)) {
+			if (tokens.decrement(__FILE__, __LINE__)) {
 				tokens.next();
 			}
 		}
 
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
+		if (tokens.decrement(__FILE__, __LINE__)) {
 			tokens.next();
 		}
 	} else {
@@ -90,30 +90,30 @@ void include::parse(tokenizer &tokens, void *data) {
 		tokens.increment(true);
 		tokens.expect<parse::text>();
 
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
+		if (tokens.decrement(__FILE__, __LINE__)) {
 			path.push_back({"", tokens.next()});
 
-			if (tokens.decrement(__FILE__, __LINE__, data)) {
+			if (tokens.decrement(__FILE__, __LINE__)) {
 				tokens.next();
 
 				tokens.increment(true);
 				tokens.expect<parse::instance>();
 	
-				if (tokens.decrement(__FILE__, __LINE__, data)) {
+				if (tokens.decrement(__FILE__, __LINE__)) {
 					path.back().first = tokens.next();
 				}
 			}
 		}
 	}
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next();
 	}
 
 	tokens.syntax_end(this);
 }
 
-bool include::is_next(tokenizer &tokens, int i, void *data) {
+bool include::is_next(tokenizer &tokens, int i, std::any data) {
 	return tokens.is_next("import", i);
 }
 

@@ -22,7 +22,7 @@ function::function(const function &cpy) : parse::syntax(cpy) {
 	}
 }
 
-function::function(tokenizer &tokens, void *data) {
+function::function(tokenizer &tokens, std::any data) {
 	debug_name = "wv_function";
 	body = nullptr;
 	parse(tokens, data);
@@ -35,12 +35,13 @@ function::~function() {
 	body = nullptr;
 }
 
-void function::parse(tokenizer &tokens, void *data) {
-	const parse::registry *registry = (const parse::registry*)data;
-	if (registry == nullptr) {
+void function::parse(tokenizer &tokens, std::any data) {
+	if (not data.has_value()) {
 		tokens.internal("parsing registry not loaded", __FILE__, __LINE__);
 		return;
 	}
+
+	const parse::registry *registry = std::any_cast<const parse::registry*>(data);
 
 	tokens.syntax_start(this);
 
@@ -104,7 +105,7 @@ void function::parse(tokenizer &tokens, void *data) {
 		ref->expect(tokens);
 
 		if (tokens.decrement(__FILE__, __LINE__)) {
-			body = ref->produce(tokens, ref->data);
+			body = ref->produce(tokens);
 		}
 	}
 
@@ -123,12 +124,13 @@ void function::parse(tokenizer &tokens, void *data) {
 	tokens.syntax_end(this);
 }
 
-bool function::is_next(tokenizer &tokens, int i, void *data) {
-	const parse::registry *registry = (const parse::registry*)data;
-	if (registry == nullptr) {
+bool function::is_next(tokenizer &tokens, int i, std::any data) {
+	if (not data.has_value()) {
 		tokens.internal("parsing registry not loaded", __FILE__, __LINE__);
 		return false;
 	}
+
+	const parse::registry *registry = std::any_cast<const parse::registry*>(data);
 
 	for (std::string lang : registry->getParserIndex()) {
 		if (tokens.is_next(lang, i)) {

@@ -13,7 +13,7 @@ modfile::modfile()
 	debug_name = "wv_modfile";
 }
 
-modfile::modfile(tokenizer &tokens, void *data)
+modfile::modfile(tokenizer &tokens, std::any data)
 {
 	debug_name = "wv_modfile";
 	parse(tokens, data);
@@ -24,7 +24,7 @@ modfile::~modfile()
 
 }
 
-void modfile::parse(tokenizer &tokens, void *data)
+void modfile::parse(tokenizer &tokens, std::any data)
 {
 	tokens.syntax_start(this);
 
@@ -50,7 +50,7 @@ void modfile::parse(tokenizer &tokens, void *data)
 	tokens.syntax_end(this);
 }
 
-bool modfile::is_next(tokenizer &tokens, int i, void *data) {
+bool modfile::is_next(tokenizer &tokens, int i, std::any data) {
 	while (tokens.is_next<parse::new_line>(i)) {
 		i++;
 	}

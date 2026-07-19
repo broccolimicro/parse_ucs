@@ -11,7 +11,7 @@ function_decl::function_decl() {
 	debug_name = "wv_function_decl";
 }
 
-function_decl::function_decl(tokenizer &tokens, void *data) {
+function_decl::function_decl(tokenizer &tokens, std::any data) {
 	debug_name = "wv_function_decl";
 	parse(tokens, data);
 }
@@ -19,7 +19,7 @@ function_decl::function_decl(tokenizer &tokens, void *data) {
 function_decl::~function_decl() {
 }
 
-void function_decl::parse(tokenizer &tokens, void *data) {
+void function_decl::parse(tokenizer &tokens, std::any data) {
 	tokens.syntax_start(this);
 
 	tokens.increment(false);
@@ -41,12 +41,12 @@ void function_decl::parse(tokenizer &tokens, void *data) {
 	tokens.expect<parse::instance>();
 
 	// name of function
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		name = tokens.next();
 	}
 
 	// receiver
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		recv = name;
 
 		tokens.next();
@@ -54,30 +54,30 @@ void function_decl::parse(tokenizer &tokens, void *data) {
 		tokens.increment(true);
 		tokens.expect<parse::instance>();
 
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
+		if (tokens.decrement(__FILE__, __LINE__)) {
 			name = tokens.next();
 		}
 	}
 
 	// "("
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next();
 	}
 
 	// arguments
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		args.push_back(declaration(tokens, data));
 
 		tokens.increment(false);
 		tokens.expect(";");
 
-		while (tokens.decrement(__FILE__, __LINE__, data)) {
+		while (tokens.decrement(__FILE__, __LINE__)) {
 			tokens.next();
 
 			tokens.increment(true);
 			tokens.expect<declaration>();
 
-			if (tokens.decrement(__FILE__, __LINE__, data)) {
+			if (tokens.decrement(__FILE__, __LINE__)) {
 				args.push_back(declaration(tokens, data));
 			}
 
@@ -87,19 +87,19 @@ void function_decl::parse(tokenizer &tokens, void *data) {
 	}
 
 	// ")"
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next();
 	}
 
 	// return type
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		ret.parse(tokens, data);
 	}
 
 	tokens.syntax_end(this);
 }
 
-bool function_decl::is_next(tokenizer &tokens, int i, void *data) {
+bool function_decl::is_next(tokenizer &tokens, int i, std::any data) {
 	return tokens.is_next<parse::instance>(i);
 }
 

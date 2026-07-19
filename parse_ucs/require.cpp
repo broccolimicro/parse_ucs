@@ -12,7 +12,7 @@ require::require() {
 	debug_name = "wv_require";
 }
 
-require::require(tokenizer &tokens, void *data) {
+require::require(tokenizer &tokens, std::any data) {
 	debug_name = "wv_require";
 	parse(tokens, data);
 }
@@ -20,7 +20,7 @@ require::require(tokenizer &tokens, void *data) {
 require::~require() {
 }
 
-void require::parse(tokenizer &tokens, void *data) {
+void require::parse(tokenizer &tokens, std::any data) {
 	tokens.syntax_start(this);
 	
 	tokens.increment(true);
@@ -32,11 +32,11 @@ void require::parse(tokenizer &tokens, void *data) {
 	tokens.increment(true);
 	tokens.expect("require");
 	
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next();
 	}
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next();
 		
 		tokens.increment(true);
@@ -48,17 +48,17 @@ void require::parse(tokenizer &tokens, void *data) {
 		tokens.increment(true);
 		tokens.expect<parse::new_line>();
 
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
+		if (tokens.decrement(__FILE__, __LINE__)) {
 			tokens.next();
 		}
 
-		while (tokens.decrement(__FILE__, __LINE__, data)) {
+		while (tokens.decrement(__FILE__, __LINE__)) {
 			path.push_back({tokens.next(), ""});
 
 			tokens.increment(true);
 			tokens.expect<parse::text>();
 
-			if (tokens.decrement(__FILE__, __LINE__, data)) {
+			if (tokens.decrement(__FILE__, __LINE__)) {
 				path.back().second = tokens.next();
 			}
 
@@ -68,38 +68,38 @@ void require::parse(tokenizer &tokens, void *data) {
 			tokens.increment(true);
 			tokens.expect<parse::new_line>();
 
-			if (tokens.decrement(__FILE__, __LINE__, data)) {
+			if (tokens.decrement(__FILE__, __LINE__)) {
 				tokens.next();
 			}
 		}
 
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
+		if (tokens.decrement(__FILE__, __LINE__)) {
 			tokens.next();
 		}
 	} else {
 		tokens.increment(true);
 		tokens.expect<parse::text>();
 
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
+		if (tokens.decrement(__FILE__, __LINE__)) {
 			path.push_back({tokens.next(), ""});
 
 			tokens.increment(true);
 			tokens.expect<parse::text>();
 
-			if (tokens.decrement(__FILE__, __LINE__, data)) {
+			if (tokens.decrement(__FILE__, __LINE__)) {
 				path.back().second = tokens.next();
 			}
 		}
 	}
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next();
 	}
 
 	tokens.syntax_end(this);
 }
 
-bool require::is_next(tokenizer &tokens, int i, void *data) {
+bool require::is_next(tokenizer &tokens, int i, std::any data) {
 	return tokens.is_next("require", i);
 }
 

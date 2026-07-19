@@ -11,7 +11,7 @@ datatype::datatype() {
 	debug_name = "wv_datatype";
 }
 
-datatype::datatype(tokenizer &tokens, void *data) {
+datatype::datatype(tokenizer &tokens, std::any data) {
 	debug_name = "wv_datatype";
 	parse(tokens, data);
 }
@@ -19,7 +19,7 @@ datatype::datatype(tokenizer &tokens, void *data) {
 datatype::~datatype() {
 }
 
-void datatype::parse(tokenizer &tokens, void *data) {
+void datatype::parse(tokenizer &tokens, std::any data) {
 	tokens.syntax_start(this);
 
 	tokens.increment(true);
@@ -35,15 +35,15 @@ void datatype::parse(tokenizer &tokens, void *data) {
 	tokens.expect("type");
 	tokens.expect("interface");
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		kind = tokens.next();
 	}
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		name = tokens.next();
 	}
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next();
 	}
 
@@ -54,7 +54,7 @@ void datatype::parse(tokenizer &tokens, void *data) {
 	}
 	tokens.expect<prototype>();
 
-	while (tokens.decrement(__FILE__, __LINE__, data)) {
+	while (tokens.decrement(__FILE__, __LINE__)) {
 		if (tokens.found<parse::new_line>()) {
 			tokens.next();
 		} else if (tokens.found<prototype>()) {
@@ -71,14 +71,14 @@ void datatype::parse(tokenizer &tokens, void *data) {
 		tokens.expect<parse::new_line>();
 	}
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next();
 	}
 
 	tokens.syntax_end(this);
 }
 
-bool datatype::is_next(tokenizer &tokens, int i, void *data) {
+bool datatype::is_next(tokenizer &tokens, int i, std::any data) {
 	return tokens.is_next("type", i) or tokens.is_next("interface", i);
 }
 

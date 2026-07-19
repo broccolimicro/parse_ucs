@@ -12,7 +12,7 @@ namespace parse_ucs {
 
 struct signature : parse::syntax {
 	signature();
-	signature(tokenizer &tokens, void *data = NULL);
+	signature(tokenizer &tokens, std::any data=std::any());
 	~signature();
 
 	type_name recv;
@@ -20,8 +20,8 @@ struct signature : parse::syntax {
 	vector<type_signature> args;
 	bool qualified;
 
-	void parse(tokenizer &tokens, void *data = NULL);
-	static bool is_next(tokenizer &tokens, int i = 1, void *data = NULL);
+	void parse(tokenizer &tokens, std::any data=std::any());
+	static bool is_next(tokenizer &tokens, int i = 1, std::any data=std::any());
 	static void register_syntax(tokenizer &tokens);
 
 	string to_string(string tab = "") const;

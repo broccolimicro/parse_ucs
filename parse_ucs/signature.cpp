@@ -13,7 +13,7 @@ signature::signature() {
 	qualified = false;
 }
 
-signature::signature(tokenizer &tokens, void *data) {
+signature::signature(tokenizer &tokens, std::any data) {
 	debug_name = "wv_signature";
 	qualified = false;
 	parse(tokens, data);
@@ -22,7 +22,7 @@ signature::signature(tokenizer &tokens, void *data) {
 signature::~signature() {
 }
 
-void signature::parse(tokenizer &tokens, void *data) {
+void signature::parse(tokenizer &tokens, std::any data) {
 	tokens.syntax_start(this);
 
 	tokens.increment(false);
@@ -35,17 +35,17 @@ void signature::parse(tokenizer &tokens, void *data) {
 	tokens.expect<type_name>();
 
 	// function name
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		recv.parse(tokens, data);
 	}
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next();
 
 		tokens.increment(true);
 		tokens.expect<parse::instance>();
 
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
+		if (tokens.decrement(__FILE__, __LINE__)) {
 			name = tokens.next();
 		}
 	} else {
@@ -53,7 +53,7 @@ void signature::parse(tokenizer &tokens, void *data) {
 		recv.name = "";
 	}
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		qualified = true;
 		tokens.next();
 
@@ -63,19 +63,19 @@ void signature::parse(tokenizer &tokens, void *data) {
 		tokens.increment(false);
 		tokens.expect<type_signature>();
 
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
+		if (tokens.decrement(__FILE__, __LINE__)) {
 			args.push_back(type_signature(tokens, data));
 
 			tokens.increment(false);
 			tokens.expect(",");
 
-			while (tokens.decrement(__FILE__, __LINE__, data)) {
+			while (tokens.decrement(__FILE__, __LINE__)) {
 				tokens.next();
 
 				tokens.increment(true);
 				tokens.expect<type_signature>();
 
-				if (tokens.decrement(__FILE__, __LINE__, data)) {
+				if (tokens.decrement(__FILE__, __LINE__)) {
 					args.push_back(type_signature(tokens, data));
 				}
 
@@ -85,7 +85,7 @@ void signature::parse(tokenizer &tokens, void *data) {
 		}
 
 		// ")"
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
+		if (tokens.decrement(__FILE__, __LINE__)) {
 			tokens.next();
 		}
 	}
@@ -93,7 +93,7 @@ void signature::parse(tokenizer &tokens, void *data) {
 	tokens.syntax_end(this);
 }
 
-bool signature::is_next(tokenizer &tokens, int i, void *data) {
+bool signature::is_next(tokenizer &tokens, int i, std::any data) {
 	return tokens.is_next<parse::instance>(i)
 		and not tokens.is_next("func", i)
 		and not tokens.is_next("struct", i);

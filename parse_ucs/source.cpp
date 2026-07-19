@@ -11,7 +11,7 @@ source::source() {
 	debug_name = "wv_source";
 }
 
-source::source(tokenizer &tokens, void *data) {
+source::source(tokenizer &tokens, std::any data) {
 	debug_name = "wv_source";
 	parse(tokens, data);
 }
@@ -19,7 +19,7 @@ source::source(tokenizer &tokens, void *data) {
 source::~source() {
 }
 
-void source::parse(tokenizer &tokens, void *data) {
+void source::parse(tokenizer &tokens, std::any data) {
 	tokens.syntax_start(this);
 
 	tokens.increment(false);
@@ -41,7 +41,7 @@ void source::parse(tokenizer &tokens, void *data) {
 	tokens.expect<function>();
 	tokens.expect<datatype>();
 	tokens.expect<parse::new_line>();
-	while (tokens.decrement(__FILE__, __LINE__, data)) {
+	while (tokens.decrement(__FILE__, __LINE__)) {
 		if (tokens.found<function>()) {
 			funcs.push_back(function(tokens, data));
 		} else if (tokens.found<datatype>()) {
@@ -59,7 +59,7 @@ void source::parse(tokenizer &tokens, void *data) {
 	tokens.syntax_end(this);
 }
 
-bool source::is_next(tokenizer &tokens, int i, void *data) {
+bool source::is_next(tokenizer &tokens, int i, std::any data) {
 	while (tokens.is_next<parse::new_line>(i)) {
 		i++;
 	}

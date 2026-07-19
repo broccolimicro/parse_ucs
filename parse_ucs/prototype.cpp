@@ -12,7 +12,7 @@ prototype::prototype() {
 	debug_name = "wv_prototype";
 }
 
-prototype::prototype(tokenizer &tokens, void *data) {
+prototype::prototype(tokenizer &tokens, std::any data) {
 	debug_name = "wv_prototype";
 	parse(tokens, data);
 }
@@ -20,7 +20,7 @@ prototype::prototype(tokenizer &tokens, void *data) {
 prototype::~prototype() {
 }
 
-void prototype::parse(tokenizer &tokens, void *data) {
+void prototype::parse(tokenizer &tokens, std::any data) {
 	tokens.syntax_start(this);
 	
 	tokens.increment(false);
@@ -39,27 +39,27 @@ void prototype::parse(tokenizer &tokens, void *data) {
 	tokens.expect<parse::instance>();
 
 	// function name
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		name = tokens.next();
 	}
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next();
 	}
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		args.push_back(declaration(tokens, data));
 
 		tokens.increment(false);
 		tokens.expect(";");
 
-		while (tokens.decrement(__FILE__, __LINE__, data)) {
+		while (tokens.decrement(__FILE__, __LINE__)) {
 			tokens.next();
 
 			tokens.increment(true);
 			tokens.expect<declaration>();
 
-			if (tokens.decrement(__FILE__, __LINE__, data)) {
+			if (tokens.decrement(__FILE__, __LINE__)) {
 				args.push_back(declaration(tokens, data));
 			}
 
@@ -69,19 +69,19 @@ void prototype::parse(tokenizer &tokens, void *data) {
 	}
 
 	// ")"
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next();
 	}
 
 	// return type
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		ret.parse(tokens, data);
 	}
 
 	tokens.syntax_end(this);
 }
 
-bool prototype::is_next(tokenizer &tokens, int i, void *data) {
+bool prototype::is_next(tokenizer &tokens, int i, std::any data) {
 	return tokens.is_next<parse::instance>(i) and tokens.is_next("(", i+1) and not tokens.is_next("func", i) and not tokens.is_next("struct", i);
 }
 

@@ -11,7 +11,7 @@ include_list::include_list() {
 	debug_name = "wv_include_list";
 }
 
-include_list::include_list(tokenizer &tokens, void *data) {
+include_list::include_list(tokenizer &tokens, std::any data) {
 	debug_name = "wv_include_list";
 	parse(tokens, data);
 }
@@ -19,7 +19,7 @@ include_list::include_list(tokenizer &tokens, void *data) {
 include_list::~include_list() {
 }
 
-void include_list::parse(tokenizer &tokens, void *data) {
+void include_list::parse(tokenizer &tokens, std::any data) {
 	tokens.syntax_start(this);
 
 	tokens.increment(false);
@@ -40,7 +40,7 @@ void include_list::parse(tokenizer &tokens, void *data) {
 	tokens.syntax_end(this);
 }
 
-bool include_list::is_next(tokenizer &tokens, int i, void *data) {
+bool include_list::is_next(tokenizer &tokens, int i, std::any data) {
 	while (tokens.is_next<parse::new_line>(i)) {
 		i++;
 	}

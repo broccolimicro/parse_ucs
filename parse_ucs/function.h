@@ -18,7 +18,7 @@ struct function : parse::syntax {
 
 	function();
 	function(const function &cpy);
-	function(tokenizer &tokens, void *data = NULL);
+	function(tokenizer &tokens, std::any data=std::any());
 	~function();
 
 	string lang;
@@ -28,8 +28,8 @@ struct function : parse::syntax {
 
 	parse::syntax *body;
 
-	void parse(tokenizer &tokens, void *data = NULL);
-	static bool is_next(tokenizer &tokens, int i = 1, void *data = NULL);
+	void parse(tokenizer &tokens, std::any data=std::any());
+	static bool is_next(tokenizer &tokens, int i = 1, std::any data=std::any());
 	static void register_syntax(tokenizer &tokens, const parse::registry *registry);
 
 	string to_string(string tab = "") const;
