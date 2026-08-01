@@ -38,7 +38,7 @@ void source::parse(tokenizer &tokens, std::any data) {
 	}
 
 	tokens.increment(false);
-	tokens.expect<function>();
+	tokens.expect<function>(data);
 	tokens.expect<datatype>();
 	tokens.expect<parse::new_line>();
 	while (tokens.decrement(__FILE__, __LINE__)) {
@@ -51,7 +51,7 @@ void source::parse(tokenizer &tokens, std::any data) {
 		}
 
 		tokens.increment(false);
-		tokens.expect<function>();
+		tokens.expect<function>(data);
 		tokens.expect<datatype>();
 		tokens.expect<parse::new_line>();
 	}

@@ -2,7 +2,10 @@
 
 #include <parse_expression/expression.h>
 #include <parse_expression/assignment.h>
+#include <parse_expression/literal.h>
 #include <parse_expression/wrapper.h>
+#include <parse/wrapper.h>
+#include "type_name.h"
 
 namespace parse_ucs {
 
@@ -26,6 +29,10 @@ struct composition_config {
 	composition_config();
 	~composition_config();
 };
+
+using constant = parse_expression::default_constant;
+using literal = parse_expression::default_literal;
+using label = parse::wrapper<parse::number>;
 
 using expression = parse_expression::rvalue<expression_config>;
 using guard = parse_expression::rvalue<expression_config, parse_expression::guard>;

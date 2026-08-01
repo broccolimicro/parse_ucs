@@ -9,17 +9,6 @@ namespace parse_ucs {
 
 function::function() {
 	debug_name = "wv_function";
-	body = nullptr;
-}
-
-function::function(const function &cpy) : parse::syntax(cpy) {
-	lang = cpy.lang;
-	decl = cpy.decl;
-	if (cpy.body != nullptr) {
-		body = cpy.body->clone();
-	} else {
-		body = nullptr;
-	}
 }
 
 function::function(tokenizer &tokens, std::any data) {
@@ -29,10 +18,6 @@ function::function(tokenizer &tokens, std::any data) {
 }
 
 function::~function() {
-	if (body != nullptr) {
-		delete body;
-	}
-	body = nullptr;
 }
 
 void function::parse(tokenizer &tokens, std::any data) {
@@ -105,7 +90,7 @@ void function::parse(tokenizer &tokens, std::any data) {
 		ref->expect(tokens);
 
 		if (tokens.decrement(__FILE__, __LINE__)) {
-			body = ref->produce(tokens);
+			body = std::shared_ptr<parse::syntax>(ref->produce(tokens));
 		}
 	}
 
@@ -183,7 +168,7 @@ string function::to_string(string tab) const {
 
 	result += " {\n";
 
-	if (body != nullptr) {
+	if (body) {
 		result += body->to_string(tab + "\t");
 	}
 

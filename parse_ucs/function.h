@@ -8,6 +8,8 @@
 #include "signature.h"
 #include "function_decl.h"
 
+#include <memory>
+
 namespace parse_ucs {
 
 // This represent **desired behaviors**
@@ -17,7 +19,6 @@ struct function : parse::syntax {
 	using declaration=parse_ucs::declaration_t<expression>;
 
 	function();
-	function(const function &cpy);
 	function(tokenizer &tokens, std::any data=std::any());
 	~function();
 
@@ -26,7 +27,7 @@ struct function : parse::syntax {
 
 	vector<signature> impl;
 
-	parse::syntax *body;
+	std::shared_ptr<parse::syntax> body;
 
 	void parse(tokenizer &tokens, std::any data=std::any());
 	static bool is_next(tokenizer &tokens, int i = 1, std::any data=std::any());
