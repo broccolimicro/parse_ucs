@@ -110,6 +110,8 @@ void function_decl::register_syntax(tokenizer &tokens) {
 		tokens.register_token<parse::instance>();
 		tokens.register_token<parse::white_space>(false);
 		tokens.register_token<parse::new_line>(true);
+		declaration::register_syntax(tokens);
+		type_name::register_syntax(tokens);
 	}
 }
 
